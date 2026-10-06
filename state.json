@@ -4,8 +4,8 @@
     "Polymarket": "1261335549215989760"
   },
   "since_ids": {
-    "Kalshi": "2107338348394434620",
-    "Polymarket": "2107330670787756463"
+    "Kalshi": "2107350144803107223",
+    "Polymarket": "2107341833214832865"
   },
   "posted": [
     "2107332582006251663"
@@ -22,6 +22,30 @@
       "handle": "Kalshi",
       "text": "JUST IN: Ray Dalio warns a US debt crisis could hit within 3 years https://t.co/gUxvNYQSdX",
       "ts": 1791263589.0
+    },
+    {
+      "id": "2107342589867524270",
+      "handle": "Kalshi",
+      "text": "JUST IN: Google is set to close a $1 billion deal to buy nuclear power from Constellation for its data centers",
+      "ts": 1791264600.0
+    },
+    {
+      "id": "2107346362920779978",
+      "handle": "Kalshi",
+      "text": "BREAKING: Drake did not submit any of his 2026 projects for next year's GRAMMYs, per Billboard",
+      "ts": 1791265500.0
+    },
+    {
+      "id": "2107350144803107223",
+      "handle": "Kalshi",
+      "text": "JUST IN: AMD CEO says customers are demanding more AI chips than they can make",
+      "ts": 1791266401.0
+    },
+    {
+      "id": "2107341833214832865",
+      "handle": "Polymarket",
+      "text": "JUST IN: Japanese city officials are accused of inflating census numbers by adding empty households to hide the appearance of a shrinking population.",
+      "ts": 1791264420.0
     }
   ],
   "last_post_ts": 1791263273.9356112,
