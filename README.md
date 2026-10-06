@@ -16,6 +16,7 @@ Every 10 minutes the bot checks both accounts and adds new posts to a queue. Whe
    - Surprise (0–3): genuinely new vs routine
 
    Self-promo ("NEW MARKET"), the sources' own odds forecasts, routine data and gossip score low. Then:
+   - **+0 to +3 for if.market relevance**: how directly the event moves the assets traded on if.market (Gold, Oil, TSLA, BTC = +3; broad market movers like rates, inflation, tariffs, wars, big-tech earnings = +2; indirect = +1; sports/entertainment = 0)
    - **+2** if Kalshi *and* Polymarket both report the same story (only one copy is posted)
    - **−0.75 per hour** of age, so fresh news beats stale news
 3. **Picks** the top story. It alternates between Kalshi and Polymarket, unless the other account has a clearly bigger story (2+ points higher).
@@ -59,6 +60,8 @@ Repeat protection works in three layers:
 | `MAX_AGE_HOURS` | `4` | Ignore news older than this |
 | `BREAKING_MIN_SCORE` | `8` | Score needed for a `BREAKING:` label |
 | `SOURCE_ACCOUNTS` | `Kalshi,Polymarket` | Accounts to watch |
+| `PLATFORM_ASSETS` | `Gold, Oil, TSLA, BTC` | Assets traded on if.market (used for relevance) |
+| `PLATFORM_WEIGHT` | `1.0` | Points per relevance level (0–3) |
 | `RANK_MODEL` | `claude-sonnet-5-5` | Model that ranks stories |
 | `CLAUDE_MODEL` | `claude-haiku-4-5-20251001` | Model that rewrites posts |
 | `DRY_RUN` | `false` | `true` = log what it would post, without posting |

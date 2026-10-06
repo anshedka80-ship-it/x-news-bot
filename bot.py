@@ -203,26 +203,40 @@ def prune_queue(state, now):
 RANK_MODEL = os.getenv("RANK_MODEL", "claude-sonnet-5-5")
 BOTH_SOURCES_BOOST = 2.0        # story reported by both Kalshi AND Polymarket
 FRESHNESS_PENALTY_PER_HOUR = 0.75  # older queued stories slowly lose points
+PLATFORM_ASSETS = os.getenv("PLATFORM_ASSETS", "Gold, Oil, TSLA, BTC")
+PLATFORM_WEIGHT = float(os.getenv("PLATFORM_WEIGHT", "1.0"))  # points per relevance level (0-3)
 
-RANK_PROMPT = """You are the editor of a fast breaking-news account on X. Score each
-headline from 1 to 10 for how much it deserves the next slot, using this rubric:
+RANK_PROMPT = """You are the editor of the X account of if.market, "the first
+consequence market": users trade what world events do to asset prices
+(currently """ + PLATFORM_ASSETS + """), before the events resolve.
 
+For each headline give two scores.
+
+1) "score" 1-10: how big the news is, using this rubric:
 - Reach (0-4): how many people worldwide care. Elections, wars, central banks,
   mega-cap companies, top celebrities, major disasters score high; local or
   niche stories score low.
 - Impact (0-3): real consequences for markets, the economy, policy or daily life.
 - Surprise/newsworthiness (0-3): genuinely new, unexpected or a major update,
   versus routine/scheduled/incremental info.
-
 Score LOW (1-3): platform self-promotion ("NEW MARKET", "trade now"), the
 source's own trader forecasts or odds without a real-world event, routine
 data, minor celebrity gossip, memes, vague teasers.
+
+2) "relevance" 0-3: how directly the event could move prices that if.market
+traders care about:
+- 3 = directly moves """ + PLATFORM_ASSETS + """ (e.g. OPEC/oil supply, gold or
+  central-bank moves, Tesla/Elon news, Bitcoin/crypto regulation or ETF flows)
+- 2 = clearly moves broad markets: rates, inflation, tariffs, wars/sanctions,
+  big-tech/AI earnings, recession signals, the dollar
+- 1 = some indirect market angle
+- 0 = no market angle (sports, entertainment, culture, gossip)
 
 Also give each headline a short "story" key (2-5 lowercase words) naming the
 underlying event, e.g. "fed rate cut", "ray dalio debt warning". Headlines about
 the SAME event must get the SAME key, even if worded differently.
 
-Reply ONLY with JSON: {"1": {"score": 7, "story": "..."}, "2": {...}}"""
+Reply ONLY with JSON: {"1": {"score": 7, "relevance": 2, "story": "..."}, "2": {...}}"""
 
 
 def score_queue(claude, state):
@@ -247,6 +261,10 @@ def score_queue(claude, state):
         except (TypeError, ValueError):
             i["score"] = float(i.get("score", 5))
         i["story"] = str(r.get("story") or i.get("story") or i["id"]).strip().lower()
+        try:
+            i["relevance"] = max(0.0, min(3.0, float(r.get("relevance", i.get("relevance", 0)))))
+        except (TypeError, ValueError):
+            i["relevance"] = float(i.get("relevance", 0))
 
     # Both sources covering the same story = bigger story.
     handles_by_story = {}
@@ -258,8 +276,11 @@ def score_queue(claude, state):
 
 
 def final_score(i, now):
+    """News size (+both-sources boost) + if.market relevance - age."""
     age_h = max(0.0, (now - i.get("ts", now)) / 3600)
-    return i.get("importance", i.get("score", 5)) - FRESHNESS_PENALTY_PER_HOUR * age_h
+    return (i.get("importance", i.get("score", 5))
+            + PLATFORM_WEIGHT * i.get("relevance", 0)
+            - FRESHNESS_PENALTY_PER_HOUR * age_h)
 
 
 def pick_order(state, now):
@@ -279,7 +300,7 @@ def post_one(x, claude, state, now):
     score_queue(claude, state)
     order = pick_order(state, now)
     print("Ranked: " + " | ".join(
-        f"{final_score(i, now):.1f} (ai {i.get('score')}{' +both' if i.get('both') else ''}, "
+        f"{final_score(i, now):.1f} (news {i.get('score')}, rel {i.get('relevance', 0)}{' +both' if i.get('both') else ''}, "
         f"{(now - i.get('ts', now)) / 60:.0f}m old) @{i['handle']}: {i['text'][:45]!r}"
         for i in order[:6]))
     for item in order:
