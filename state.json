@@ -5,19 +5,22 @@
   },
   "since_ids": {
     "Kalshi": "2107385370153300142",
-    "Polymarket": "2107369767224979960"
+    "Polymarket": "2107386376639463478"
   },
   "posted": [
     "2107332582006251663",
-    "2107338348394434620"
+    "2107338348394434620",
+    "2107380346614673462"
   ],
   "recent": [
     "JUST IN: CertiK says SI agents can trace stolen crypto and pause risky contracts",
-    "JUST IN: Ray Dalio warns a US debt crisis could hit within 3 years https://t.co/gUxvNYQSdX"
+    "JUST IN: Ray Dalio warns a US debt crisis could hit within 3 years https://t.co/gUxvNYQSdX",
+    "JUST IN: Japan's trade minister says China uses rare earths for \"economic coercion\" https://t.co/WZJFuOSyUm"
   ],
   "recent_out": [
     "CertiK reports security intelligence agents now have the capability to track stolen cryptocurrency and halt potentially dangerous smart contracts \u26a0\ufe0f",
-    "BREAKING: Ray Dalio cautions that the US could face a debt crisis within the next three years \ud83d\udcc9"
+    "BREAKING: Ray Dalio cautions that the US could face a debt crisis within the next three years \ud83d\udcc9",
+    "JUST IN: Japan's trade minister says China uses rare earths for \"economic coercion"
   ],
   "queue": [
     {
@@ -25,87 +28,145 @@
       "handle": "Kalshi",
       "text": "JUST IN: Google is set to close a $1 billion deal to buy nuclear power from Constellation for its data centers",
       "ts": 1791264600.0,
-      "score": 7.0
+      "score": 6.0,
+      "story": "google constellation nuclear deal",
+      "relevance": 3.0,
+      "both": false,
+      "importance": 6.0
     },
     {
       "id": "2107346362920779978",
       "handle": "Kalshi",
       "text": "BREAKING: Drake did not submit any of his 2026 projects for next year's GRAMMYs, per Billboard",
       "ts": 1791265500.0,
-      "score": 3.0
+      "score": 2.0,
+      "story": "drake grammys no submission",
+      "relevance": 0.0,
+      "both": false,
+      "importance": 2.0
     },
     {
       "id": "2107350144803107223",
       "handle": "Kalshi",
       "text": "JUST IN: AMD CEO says customers are demanding more AI chips than they can make",
       "ts": 1791266401.0,
-      "score": 7.0
+      "score": 6.0,
+      "story": "amd ai chip demand",
+      "relevance": 3.0,
+      "both": false,
+      "importance": 6.0
     },
     {
       "id": "2107355170959196219",
       "handle": "Kalshi",
       "text": "JUST IN: The US will sell $153 billion worth of debt today",
       "ts": 1791267600.0,
-      "score": 6.0
+      "score": 3.0,
+      "story": "us treasury debt auction",
+      "relevance": 2.0,
+      "both": false,
+      "importance": 3.0
     },
     {
       "id": "2107360204304126002",
       "handle": "Kalshi",
       "text": "JUST IN: Our traders now forecast US diesel prices will fall to $6.20 this month, after Trump\u2019s tax-free order https://t.co/RaV1Mto9YO",
       "ts": 1791268800.0,
-      "score": 5.0
+      "score": 3.0,
+      "story": "us diesel tax-free order",
+      "relevance": 3.0,
+      "both": false,
+      "importance": 3.0
     },
     {
       "id": "2107365241948340274",
       "handle": "Kalshi",
       "text": "JUST IN: South Korea will spend $3.5 billion of state and private funds to build its homegrown SI model in 5 months",
-      "ts": 1791270001.0
+      "ts": 1791270001.0,
+      "score": 5.0,
+      "story": "south korea sovereign ai model",
+      "relevance": 2.0,
+      "both": false,
+      "importance": 5.0
     },
     {
       "id": "2107370270663245923",
       "handle": "Kalshi",
       "text": "BREAKING: Spain wants data centers to cover 80% of power with new renewables",
-      "ts": 1791271200.0
+      "ts": 1791271200.0,
+      "score": 4.0,
+      "story": "spain data center renewables rule",
+      "relevance": 2.0,
+      "both": false,
+      "importance": 4.0
     },
     {
       "id": "2107375303706440057",
       "handle": "Kalshi",
       "text": "JUST IN: AMD CEO says their investment in Taiwan is progressing and they'll \"boost the figure\"",
-      "ts": 1791272400.0
-    },
-    {
-      "id": "2107380346614673462",
-      "handle": "Kalshi",
-      "text": "JUST IN: Japan's trade minister says China uses rare earths for \"economic coercion\" https://t.co/WZJFuOSyUm",
-      "ts": 1791273602.0
+      "ts": 1791272400.0,
+      "score": 4.0,
+      "story": "amd taiwan investment",
+      "relevance": 3.0,
+      "both": false,
+      "importance": 4.0
     },
     {
       "id": "2107385370153300142",
       "handle": "Kalshi",
       "text": "JUST IN: Moonshot targets an IPO in Q1 2027 after hitting a $50 billion valuation",
-      "ts": 1791274800.0
+      "ts": 1791274800.0,
+      "score": 5.0,
+      "story": "moonshot ipo plan",
+      "relevance": 2.0,
+      "both": false,
+      "importance": 5.0
     },
     {
       "id": "2107341833214832865",
       "handle": "Polymarket",
       "text": "JUST IN: Japanese city officials are accused of inflating census numbers by adding empty households to hide the appearance of a shrinking population.",
       "ts": 1791264420.0,
-      "score": 4.0
+      "score": 3.0,
+      "story": "japan census inflation scandal",
+      "relevance": 0.0,
+      "both": false,
+      "importance": 3.0
     },
     {
       "id": "2107361714111189007",
       "handle": "Polymarket",
       "text": "\ud83d\udea8 NEW POLYMARKET: Plague declared public health emergency by...?\n\nhttps://t.co/oUuD6uzZDS",
       "ts": 1791269160.0,
-      "score": 2.0
+      "score": 2.0,
+      "story": "plague public health emergency market",
+      "relevance": 1.0,
+      "both": false,
+      "importance": 2.0
     },
     {
       "id": "2107369767224979960",
       "handle": "Polymarket",
       "text": "JUST IN: OpenAI admits its response was \u201cnot good enough\u201d after a rogue AI agent breached Australian government websites.",
-      "ts": 1791271080.0
+      "ts": 1791271080.0,
+      "score": 5.0,
+      "story": "openai rogue agent australia breach",
+      "relevance": 2.0,
+      "both": false,
+      "importance": 5.0
+    },
+    {
+      "id": "2107386376639463478",
+      "handle": "Polymarket",
+      "text": "\ud83d\udea8 NEW POLYMARKET: Spain General Election Winner\n\nhttps://t.co/LOfIHxRXi4",
+      "ts": 1791275040.0,
+      "score": 2.0,
+      "story": "spain general election market",
+      "relevance": 2.0,
+      "both": false,
+      "importance": 2.0
     }
   ],
-  "last_post_ts": 1791269625.6225457,
+  "last_post_ts": 1791275652.3052063,
   "last_source": "Kalshi"
 }
