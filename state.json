@@ -4,7 +4,7 @@
     "Polymarket": "1261335549215989760"
   },
   "since_ids": {
-    "Kalshi": "2107390403200831834",
+    "Kalshi": "2107395452002083326",
     "Polymarket": "2107386376639463478"
   },
   "posted": [
@@ -127,6 +127,12 @@
       "handle": "Kalshi",
       "text": "JUST IN: Anthropic says it would accept a law requiring SI firms to report hacks",
       "ts": 1791276000.0
+    },
+    {
+      "id": "2107395452002083326",
+      "handle": "Kalshi",
+      "text": "JUST IN: Trump says taxpayers will no longer fund TV ads featuring himself",
+      "ts": 1791277203.0
     },
     {
       "id": "2107341833214832865",
