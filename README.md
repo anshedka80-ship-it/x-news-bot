@@ -8,7 +8,7 @@ Every 10 minutes the bot checks both accounts and adds new posts to a queue. Whe
 
 1. **Filters** the queue:
    - drops posts with videos or GIFs
-   - drops anything older than 4 hours
+   - drops anything older than 3 hours
    - drops stories that repeat something already posted
 2. **Ranks** the whole queue together with **Claude Sonnet 5.5** acting as editor, scoring 1–10 on a rubric:
    - Reach (0–4): how many people worldwide care
@@ -18,7 +18,7 @@ Every 10 minutes the bot checks both accounts and adds new posts to a queue. Whe
    Self-promo ("NEW MARKET"), the sources' own odds forecasts, routine data and gossip score low. Then:
    - **+0 to +3 for if.market relevance**: how directly the event moves the assets traded on if.market (clear "if X happens, asset Y moves" stories on any tradable asset or listed company, especially pending or upcoming decisions = +3; market-moving but harder to map to one asset, like wars, elections, tariffs = +2; indirect = +1; sports/entertainment = 0)
    - **+2** if Kalshi *and* Polymarket both report the same story (only one copy is posted)
-   - **−0.75 per hour** of age, so fresh news beats stale news
+   - **+1** if the story is under 30 minutes old, and **−1.5 per hour** of age, so the latest news wins (stories older than 3 hours are dropped)
 3. **Picks** the top story. It alternates between Kalshi and Polymarket, unless the other account has a clearly bigger story (2+ points higher).
 4. **Rewrites** the story in wire-service style (Sonnet 5.5): short, direct, no hype, no emojis, no hashtags, in fresh wording, keeping all facts, numbers, names and acronyms exactly as written. It strips links and @mentions, and skips ads, promos and memes.
 5. **Labels** the post:
@@ -57,7 +57,7 @@ Repeat protection works in three layers:
 | Variable | Default | What it does |
 |---|---|---|
 | `POSTS_PER_DAY` | `14` | Posts per day, spread evenly |
-| `MAX_AGE_HOURS` | `4` | Ignore news older than this |
+| `MAX_AGE_HOURS` | `3` | Ignore news older than this |
 | `BREAKING_MIN_SCORE` | `8` | Score needed for a `BREAKING:` label |
 | `SOURCE_ACCOUNTS` | `Kalshi,Polymarket` | Accounts to watch |
 | `PLATFORM_ASSETS` | almost any asset (crypto, commodities, stocks, indices, FX, bonds) | What if.market trades (used for relevance) |

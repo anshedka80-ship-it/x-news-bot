@@ -23,7 +23,7 @@ SOURCE_ACCOUNTS = [a.strip().lstrip("@") for a in
 POSTS_PER_DAY = int(os.getenv("POSTS_PER_DAY", "14"))
 GAP_SECONDS = 86400 / POSTS_PER_DAY          # ~1h43m for 14/day
 GAP_TOLERANCE = 6 * 60                       # GitHub cron runs late sometimes
-MAX_AGE_SECONDS = int(os.getenv("MAX_AGE_HOURS", "4")) * 3600  # drop stale news
+MAX_AGE_SECONDS = int(float(os.getenv("MAX_AGE_HOURS", "3")) * 3600)  # drop stale news
 MAX_QUEUE_PER_SOURCE = 30
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-sonnet-5-5")  # rewriting model
 DRY_RUN = os.getenv("DRY_RUN", "false").lower() == "true"
@@ -260,7 +260,8 @@ def prune_queue(state, now):
 
 RANK_MODEL = os.getenv("RANK_MODEL", "claude-sonnet-5-5")
 BOTH_SOURCES_BOOST = 2.0        # story reported by both Kalshi AND Polymarket
-FRESHNESS_PENALTY_PER_HOUR = 0.75  # older queued stories slowly lose points
+FRESHNESS_PENALTY_PER_HOUR = float(os.getenv("FRESHNESS_PENALTY_PER_HOUR", "1.5"))  # older stories lose points
+FRESH_BONUS = 1.0                  # extra points for news under 30 minutes old
 PLATFORM_ASSETS = os.getenv("PLATFORM_ASSETS", "almost any asset: crypto (BTC, ETH, SOL...), commodities (oil, gold...), individual stocks, indices, currencies and bonds")
 PLATFORM_WEIGHT = float(os.getenv("PLATFORM_WEIGHT", "1.0"))  # points per relevance level (0-3)
 
@@ -345,7 +346,8 @@ def final_score(i, now):
     age_h = max(0.0, (now - i.get("ts", now)) / 3600)
     return (i.get("importance", i.get("score", 5))
             + PLATFORM_WEIGHT * i.get("relevance", 0)
-            - FRESHNESS_PENALTY_PER_HOUR * age_h)
+            - FRESHNESS_PENALTY_PER_HOUR * age_h
+            + (FRESH_BONUS if age_h < 0.5 else 0))
 
 
 def pick_order(state, now):
