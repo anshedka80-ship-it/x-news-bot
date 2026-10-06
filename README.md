@@ -20,7 +20,7 @@ Every 10 minutes the bot checks both accounts and adds new posts to a queue. Whe
    - **+2** if Kalshi *and* Polymarket both report the same story (only one copy is posted)
    - **−0.75 per hour** of age, so fresh news beats stale news
 3. **Picks** the top story. It alternates between Kalshi and Polymarket, unless the other account has a clearly bigger story (2+ points higher).
-4. **Rewrites** the story in fresh wording, keeping all facts, numbers, names and acronyms exactly as written. It strips links and @mentions, and skips ads, promos and memes.
+4. **Rewrites** the story in wire-service style (Sonnet 5.5): short, direct, no hype, no emojis, no hashtags, in fresh wording, keeping all facts, numbers, names and acronyms exactly as written. It strips links and @mentions, and skips ads, promos and memes.
 5. **Labels** the post:
    - `BREAKING:` for major stories (score 8+)
    - `JUST IN:` for everything else
@@ -63,7 +63,7 @@ Repeat protection works in three layers:
 | `PLATFORM_ASSETS` | almost any asset (crypto, commodities, stocks, indices, FX, bonds) | What if.market trades (used for relevance) |
 | `PLATFORM_WEIGHT` | `1.0` | Points per relevance level (0–3) |
 | `RANK_MODEL` | `claude-sonnet-5-5` | Model that ranks stories |
-| `CLAUDE_MODEL` | `claude-haiku-4-5-20251001` | Model that rewrites posts |
+| `CLAUDE_MODEL` | `claude-sonnet-5-5` | Model that rewrites posts |
 | `DRY_RUN` | `false` | `true` = log what it would post, without posting |
 
 > Variables other than `SOURCE_ACCOUNTS` and `DRY_RUN` also need to be added to the `env:` block in `bot.yml` to take effect.
@@ -79,7 +79,7 @@ Repeat protection works in three layers:
 | | |
 |---|---|
 | X API | ~$0.005 per post read + ~$0.015 per post published. Links are stripped (posts with links cost ~$0.20). |
-| Claude (Sonnet ranking + Haiku rewriting) | Roughly a few dollars a month |
+| Claude Sonnet 5.5 (ranking + rewriting) | ~$5–6 a month |
 | GitHub Actions | Free (private repo, within the free minutes) |
 
 At 14 posts/day the X credit lasts roughly a month per $20.
