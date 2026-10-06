@@ -4,13 +4,19 @@
     "Polymarket": "1261335549215989760"
   },
   "since_ids": {
-    "Kalshi": "2107329539311296785",
+    "Kalshi": "2107332582006251663",
     "Polymarket": "2107330670787756463"
   },
-  "posted": [],
-  "recent": [],
-  "recent_out": [],
+  "posted": [
+    "2107332582006251663"
+  ],
+  "recent": [
+    "JUST IN: CertiK says SI agents can trace stolen crypto and pause risky contracts"
+  ],
+  "recent_out": [
+    "CertiK reports security intelligence agents now have the capability to track stolen cryptocurrency and halt potentially dangerous smart contracts \u26a0\ufe0f"
+  ],
   "queue": [],
-  "last_post_ts": 0,
-  "last_source": ""
+  "last_post_ts": 1791263273.9356112,
+  "last_source": "Kalshi"
 }
