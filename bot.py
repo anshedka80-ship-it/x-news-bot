@@ -38,10 +38,14 @@ The source posts short headlines on ANY topic (politics, crypto, AI/tech,
 economy, companies, world events, markets). All of these count as news.
 
 STYLE
-- One sentence, wire-service voice: direct, factual, active voice, present tense.
-- Lead with the most important fact: who did/said what.
-- As short as the original or shorter. Aim for 60-200 characters.
-- Use plain, precise words. Prefer "says" over "cautions/reports/states/notes".
+- Natural, fluent English that reads like a professional news desk wrote it,
+  not a lightly edited copy. Factual, active voice, present tense.
+- One sentence, or two short ones if that reads better. Usually 90-220
+  characters. It is fine to be a little longer than the source if that makes
+  it clearer, as long as you add NO new facts.
+- Lead with the most newsworthy part. You may reorder the sentence (who/what,
+  then the detail), and make implied context explicit only when it is already
+  in the source (e.g. "the chain", "the company", "its CEO").
 - No filler or hype: no "reportedly", "massive", "huge", "shocking", "could
   potentially", "it has been announced that", "in a major move".
 - No opinions, commentary, questions, calls to action or "here's why".
@@ -59,28 +63,32 @@ ACCURACY (most important)
   Never write "our". Do not name Kalshi or Polymarket.
 - Never refer to a video, clip, image or chart.
 
-REWORDING
-- Use different wording or structure than the source, but do not make it worse:
-  if the source wording is already the clearest way to say it, change only
-  the structure lightly. Clarity and accuracy beat novelty.
+REWORDING (important)
+- Genuinely rewrite: change the sentence structure AND the wording. Do not keep
+  the source's sentence skeleton with a word or two swapped.
+- Apart from names, numbers, titles and direct quotes, never reuse more than
+  three words in a row from the source.
 
 PREFIX
 - Do NOT start with "JUST IN", "BREAKING" or similar; it is added automatically.
 
 EXAMPLES
+Source: BREAKING: Customer sues McDonald's, alleging their SI tool coordinates menu prices
+Good: McDonald's faces a lawsuit from a customer who claims the chain's SI tool is being used to coordinate menu prices
+Bad:  Customer sues McDonald's, alleging its SI tool coordinates menu prices   (same sentence, one word changed)
+
 Source: JUST IN: Ray Dalio warns a US debt crisis could hit within 3 years
-Good: Ray Dalio says the US could face a debt crisis within 3 years
+Good: A US debt crisis could arrive within the next 3 years, Ray Dalio warns
 Bad:  Ray Dalio cautions that the US could potentially face a massive debt crisis within the next three years 📉
 
 Source: JUST IN: AMD CEO says customers are demanding more AI chips than they can make
-Good: AMD CEO says demand for its AI chips is outpacing what it can produce
-Bad:  AMD's CEO has revealed that customers want more AI chips than the company is able to manufacture 🚀
+Good: Demand for AMD's AI chips is now outpacing what the company can produce, according to its CEO
 
-Source: JUST IN: The US will sell $153 billion worth of debt today
-Good: US Treasury to auction $153 billion of debt today
+Source: JUST IN: Google is set to close a $1 billion deal to buy nuclear power from Constellation for its data centers
+Good: Google is nearing a $1 billion agreement with Constellation to supply its data centers with nuclear power
 
-Source: Our traders now forecast US diesel prices will fall to $6.20 this month
-Good: Prediction market traders now expect US diesel prices to fall to $6.20 this month
+Source: JUST IN: Our traders now forecast US diesel prices will fall to $6.20 this month
+Good: Prediction market traders now expect US diesel prices to drop to $6.20 this month
 
 SKIP
 Also output exactly SKIP if the story is too sensitive for a markets brand:
@@ -153,6 +161,17 @@ def clean(text: str) -> str:
     return text
 
 
+def _trigrams(text: str):
+    w = re.findall(r"[a-z0-9$%.']+", PREFIX_RE.sub("", clean(text)).lower())
+    return {tuple(w[i:i + 3]) for i in range(len(w) - 2)}
+
+
+def copied_too_much(source: str, rewrite: str, limit: float = 0.4) -> bool:
+    """True if the rewrite reuses too many 3-word runs from the source."""
+    a, b = _trigrams(source), _trigrams(rewrite)
+    return bool(b) and len(a & b) / len(b) > limit
+
+
 def balance_quotes(text: str) -> str:
     """Close an unmatched quotation mark so a post never ends mid-quote."""
     if text.count('"') % 2 == 1:
@@ -186,13 +205,20 @@ def rephrase(claude, original: str, recent_out: list[str], prefix: str = JUSTIN_
                   f"New post to rewrite:\n{original}")
     else:
         prompt = f"New post to rewrite:\n{original}"
-    msg = claude.messages.create(
-        model=CLAUDE_MODEL,
-        max_tokens=300,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    out = clean("".join(b.text for b in msg.content if b.type == "text"))
+    messages = [{"role": "user", "content": prompt}]
+    for attempt in range(2):
+        msg = claude.messages.create(
+            model=CLAUDE_MODEL, max_tokens=300, system=SYSTEM_PROMPT, messages=messages)
+        out = clean("".join(b.text for b in msg.content if b.type == "text"))
+        if attempt == 0 and out and not out.upper().startswith("SKIP") \
+                and copied_too_much(original, out):
+            print(f"Rewrite too close to source, retrying: {out!r}")
+            messages += [{"role": "assistant", "content": out},
+                         {"role": "user", "content": "That is too close to the source wording. "
+                          "Rewrite it with a different sentence structure and different words "
+                          "(keep names, numbers and quotes). Output only the headline."}]
+            continue
+        break
     if not out or out.upper().startswith("SKIP"):
         return None
     # Always start with the fixed prefix; drop any prefix Claude/source added.
