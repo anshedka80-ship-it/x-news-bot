@@ -4,8 +4,8 @@
     "Polymarket": "1261335549215989760"
   },
   "since_ids": {
-    "Kalshi": "2107425643457597592",
-    "Polymarket": "2107423370581250510"
+    "Kalshi": "2107450801417543888",
+    "Polymarket": "2107449039927287979"
   },
   "posted": [
     "2107332582006251663",
@@ -14,7 +14,8 @@
     "2107407012711616867",
     "2107405502736970213",
     "2107410548275007965",
-    "2107400469786288286"
+    "2107400469786288286",
+    "2107450801417543888"
   ],
   "recent": [
     "JUST IN: CertiK says SI agents can trace stolen crypto and pause risky contracts",
@@ -22,7 +23,8 @@
     "JUST IN: Japan's trade minister says China uses rare earths for \"economic coercion\" https://t.co/WZJFuOSyUm",
     "JUST IN: New Zealand police reveal the Flydubai co-pilot hijacker completed a portion of his flight training in the country.",
     "BREAKING: Customer sues McDonald's, alleging their SI tool coordinates menu prices",
-    "JUST IN: 64% chance Democrats win both chambers of Congress https://t.co/fzLa7eZrEc"
+    "JUST IN: 64% chance Democrats win both chambers of Congress https://t.co/fzLa7eZrEc",
+    "JUST IN: US trade deficit widens to $105.6 billion in August"
   ],
   "recent_out": [
     "CertiK reports security intelligence agents now have the capability to track stolen cryptocurrency and halt potentially dangerous smart contracts \u26a0\ufe0f",
@@ -30,54 +32,19 @@
     "JUST IN: Japan's trade minister says China uses rare earths for \"economic coercion",
     "JUST IN: New Zealand police say the Flydubai co-pilot hijacker completed part of his flight training in the country",
     "JUST IN: Customer sues McDonald's, alleging its SI tool coordinates menu prices",
-    "JUST IN: Prediction markets put the odds of Democrats winning both chambers of Congress at 64%"
+    "JUST IN: Prediction markets put the odds of Democrats winning both chambers of Congress at 64%",
+    "JUST IN: The US trade gap grew to $105.6 billion in August."
   ],
   "queue": [
-    {
-      "id": "2107385370153300142",
-      "handle": "Kalshi",
-      "text": "JUST IN: Moonshot targets an IPO in Q1 2027 after hitting a $50 billion valuation",
-      "ts": 1791274800,
-      "score": 6.0,
-      "story": "moonshot ai ipo plan",
-      "relevance": 3.0,
-      "both": false,
-      "importance": 6.0,
-      "sensitive": 0
-    },
-    {
-      "id": "2107390403200831834",
-      "handle": "Kalshi",
-      "text": "JUST IN: Anthropic says it would accept a law requiring SI firms to report hacks",
-      "ts": 1791276000,
-      "score": 5.0,
-      "story": "anthropic hack reporting law",
-      "relevance": 2.0,
-      "both": false,
-      "importance": 5.0,
-      "sensitive": 0
-    },
-    {
-      "id": "2107395452002083326",
-      "handle": "Kalshi",
-      "text": "JUST IN: Trump says taxpayers will no longer fund TV ads featuring himself",
-      "ts": 1791277203,
-      "score": 4.0,
-      "story": "trump taxpayer tv ads",
-      "relevance": 1.0,
-      "both": false,
-      "importance": 4.0,
-      "sensitive": 0
-    },
     {
       "id": "2107415569116897629",
       "handle": "Kalshi",
       "text": "JUST IN: Lithuania says the US only needs to decide, and they will cover the costs for US military base",
       "ts": 1791282000,
       "score": 4.0,
-      "story": "lithuania us base offer",
+      "story": "lithuania us military base offer",
       "sensitive": 1,
-      "relevance": 1.0,
+      "relevance": 2.0,
       "both": false,
       "importance": 4.0
     },
@@ -86,12 +53,12 @@
       "handle": "Kalshi",
       "text": "BREAKING: A $30 estate sale painting has just been sold at an auction for $1.35 million https://t.co/CdRS8Q4w1f",
       "ts": 1791283200.0,
-      "score": 3.0,
-      "story": "thirty dollar painting auction",
+      "score": 2.0,
+      "story": "estate sale painting auction",
       "sensitive": 0,
       "relevance": 0.0,
       "both": false,
-      "importance": 3.0
+      "importance": 2.0
     },
     {
       "id": "2107425643457597592",
@@ -99,23 +66,59 @@
       "text": "JUST IN: Russia says it's ready to help the US fight disease outbreaks, including measles",
       "ts": 1791284402.0,
       "score": 3.0,
-      "story": "russia us measles help",
+      "story": "russia offers us measles help",
       "sensitive": 0,
-      "relevance": 0.0,
+      "relevance": 1.0,
       "both": false,
       "importance": 3.0
     },
     {
-      "id": "2107386376639463478",
-      "handle": "Polymarket",
-      "text": "\ud83d\udea8 NEW POLYMARKET: Spain General Election Winner\n\nhttps://t.co/LOfIHxRXi4",
-      "ts": 1791275040,
-      "score": 2.0,
-      "story": "spain election market",
-      "relevance": 1.0,
+      "id": "2107430668544414152",
+      "handle": "Kalshi",
+      "text": "JUST IN: Lithuania's parliament votes 106-18 to advance lifting its nuclear weapons ban",
+      "ts": 1791285600.0,
+      "score": 5.0,
+      "story": "lithuania lifts nuclear ban",
+      "sensitive": 1,
+      "relevance": 2.0,
       "both": false,
-      "importance": 2.0,
-      "sensitive": 0
+      "importance": 5.0
+    },
+    {
+      "id": "2107435702216442274",
+      "handle": "Kalshi",
+      "text": "JUST IN: Marco Rubio says \"threats are growing\" around Iceland",
+      "ts": 1791286800.0,
+      "score": 5.0,
+      "story": "rubio iceland threats",
+      "sensitive": 1,
+      "relevance": 2.0,
+      "both": false,
+      "importance": 5.0
+    },
+    {
+      "id": "2107440735922672040",
+      "handle": "Kalshi",
+      "text": "JUST IN: 50% chance Claude is the best AI by the year's end https://t.co/gbKgYBeNiT",
+      "ts": 1791288000.0,
+      "score": 3.0,
+      "story": "claude best ai odds",
+      "sensitive": 0,
+      "relevance": 2.0,
+      "both": false,
+      "importance": 3.0
+    },
+    {
+      "id": "2107445768105906442",
+      "handle": "Kalshi",
+      "text": "JUST IN: China wants faster investment talks with the EU, with an eye on a future trade deal",
+      "ts": 1791289200.0,
+      "score": 4.0,
+      "story": "china eu investment talks",
+      "sensitive": 0,
+      "relevance": 2.0,
+      "both": false,
+      "importance": 4.0
     },
     {
       "id": "2107423370581250510",
@@ -123,13 +126,37 @@
       "text": "JUST IN: Cuba announces it is increasing its defense capabilities \u201cmore than ever before\u201d as it prepares for the possibility of U.S. military action.",
       "ts": 1791283860.0,
       "score": 6.0,
-      "story": "cuba defense buildup us",
+      "story": "cuba defense buildup us action",
       "sensitive": 1,
       "relevance": 2.0,
       "both": false,
       "importance": 6.0
+    },
+    {
+      "id": "2107434695197597841",
+      "handle": "Polymarket",
+      "text": "JUST IN: Quebec separatists return to power for the first time since 2014, reviving a push for independence from Canada.",
+      "ts": 1791286560.0,
+      "score": 6.0,
+      "story": "quebec separatists win election",
+      "sensitive": 0,
+      "relevance": 2.0,
+      "both": false,
+      "importance": 6.0
+    },
+    {
+      "id": "2107449039927287979",
+      "handle": "Polymarket",
+      "text": "\ud83d\udea8 NEW POLYMARKET: Another Vatican x Anthropic meeting by...?\n\nhttps://t.co/vAlR4IbZ2p",
+      "ts": 1791289980.0,
+      "score": 2.0,
+      "story": "vatican anthropic meeting",
+      "sensitive": 0,
+      "relevance": 1.0,
+      "both": false,
+      "importance": 2.0
     }
   ],
-  "last_post_ts": 1791285297.927039,
+  "last_post_ts": 1791291338.4934833,
   "last_source": "Kalshi"
 }
