@@ -408,6 +408,13 @@ def post_one(x, claude, state, now):
         state["posted"].append(i["id"])
         print(f"SKIP too sensitive @{i['handle']}/{i['id']}: {i['text'][:80]!r}")
     order = pick_order(state, now)
+    forced = state.pop("force_next", None)
+    if forced:
+        pick = [i for i in order if i["id"] == str(forced)]
+        if pick:
+            order = pick  # post exactly this story (still checked for repeats)
+        else:
+            print(f"Requested story {forced} not in queue (posted, too old or too sensitive).")
     print("Ranked: " + " | ".join(
         f"{final_score(i, now):.1f} (news {i.get('score')}, rel {i.get('relevance', 0)}, sens {i.get('sensitive', 0)}{' +both' if i.get('both') else ''}, "
         f"{(now - i.get('ts', now)) / 60:.0f}m old) @{i['handle']}: {i['text'][:45]!r}"
@@ -461,6 +468,9 @@ def main():
     x = x_client()
 
     wait = state["last_post_ts"] + GAP_SECONDS - GAP_TOLERANCE - now
+    if state.get("force_next"):
+        print(f"Manual request: posting queued story {state['force_next']} now.")
+        wait = 0
     if wait > 0 and all(h in state["since_ids"] for h in SOURCE_ACCOUNTS):
         # Cost saving: X charges per post read, so we only read at posting time.
         print(f"Next post slot in {int(wait // 60)} min (no X reads until then).")
