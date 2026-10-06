@@ -4,7 +4,7 @@
     "Polymarket": "1261335549215989760"
   },
   "since_ids": {
-    "Kalshi": "2107350144803107223",
+    "Kalshi": "2107355170959196219",
     "Polymarket": "2107341833214832865"
   },
   "posted": [
@@ -40,6 +40,12 @@
       "handle": "Kalshi",
       "text": "JUST IN: AMD CEO says customers are demanding more AI chips than they can make",
       "ts": 1791266401.0
+    },
+    {
+      "id": "2107355170959196219",
+      "handle": "Kalshi",
+      "text": "JUST IN: The US will sell $153 billion worth of debt today",
+      "ts": 1791267600.0
     },
     {
       "id": "2107341833214832865",
