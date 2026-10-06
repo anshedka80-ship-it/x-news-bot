@@ -203,12 +203,15 @@ def prune_queue(state, now):
 RANK_MODEL = os.getenv("RANK_MODEL", "claude-sonnet-5-5")
 BOTH_SOURCES_BOOST = 2.0        # story reported by both Kalshi AND Polymarket
 FRESHNESS_PENALTY_PER_HOUR = 0.75  # older queued stories slowly lose points
-PLATFORM_ASSETS = os.getenv("PLATFORM_ASSETS", "Gold, Oil, TSLA, BTC")
+PLATFORM_ASSETS = os.getenv("PLATFORM_ASSETS", "BTC, ETH, SOL, Oil, Gold, TSLA")
 PLATFORM_WEIGHT = float(os.getenv("PLATFORM_WEIGHT", "1.0"))  # points per relevance level (0-3)
 
 RANK_PROMPT = """You are the editor of the X account of if.market, "the first
-consequence market": users trade what world events do to asset prices
-(currently """ + PLATFORM_ASSETS + """), before the events resolve.
+consequence market". Users trade an asset's price INSIDE a future outcome, e.g.
+"What is oil worth if the US strikes Iran? What is BTC worth if the Fed cuts?
+What is a stock worth if the product ships?" Assets include """ + PLATFORM_ASSETS + """.
+Market categories: Geopolitics, Politics, Crypto, Climate, Economics, Companies,
+Finance, Tech & Science.
 
 For each headline give two scores.
 
@@ -223,13 +226,16 @@ Score LOW (1-3): platform self-promotion ("NEW MARKET", "trade now"), the
 source's own trader forecasts or odds without a real-world event, routine
 data, minor celebrity gossip, memes, vague teasers.
 
-2) "relevance" 0-3: how directly the event could move prices that if.market
-traders care about:
-- 3 = directly moves """ + PLATFORM_ASSETS + """ (e.g. OPEC/oil supply, gold or
-  central-bank moves, Tesla/Elon news, Bitcoin/crypto regulation or ETF flows)
-- 2 = clearly moves broad markets: rates, inflation, tariffs, wars/sanctions,
-  big-tech/AI earnings, recession signals, the dollar
-- 1 = some indirect market angle
+2) "relevance" 0-3: how well the story fits if.market (an event whose outcome
+would move one of its assets):
+- 3 = a clear "if X happens, asset Y moves" story on """ + PLATFORM_ASSETS + """:
+  e.g. strikes/sanctions/OPEC decisions (oil), Fed/ECB decisions, inflation or
+  jobs data (BTC, gold), crypto regulation, ETF approvals, exchange hacks
+  (BTC/ETH/SOL), Tesla/Elon decisions, launches or deliveries (TSLA). Pending,
+  threatened or upcoming decisions are the BEST fit (users can trade the scenario).
+- 2 = clearly moves broad markets or a big company/sector: tariffs, wars,
+  elections, recession signals, the dollar, big-tech/AI earnings and deals
+- 1 = some indirect market or policy angle
 - 0 = no market angle (sports, entertainment, culture, gossip)
 
 Also give each headline a short "story" key (2-5 lowercase words) naming the
