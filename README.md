@@ -1,57 +1,79 @@
 # X News Bot
 
-Checks @Kalshi and @Polymarket every 10 minutes, rewrites each new news post with Claude, and posts it to your X account. Runs free on GitHub Actions.
+Watches **@Kalshi** and **@Polymarket**, picks the biggest headline, rewrites it with Claude, and posts it to **@ifmarkets**: **14 posts a day**, one about every **1 h 43 min**, around the clock.
 
-## 1. Get X API keys (~10 min)
+## How it works
 
-1. Go to https://developer.x.com and sign in **with the account the bot will post from**.
-2. Sign up for a developer account (pay-per-use is the default) and add credit (~$20 to start).
-3. Create a Project + App.
-4. In the app's **User authentication settings**: set permissions to **Read and write**, type **Web App/Automated bot**, callback URL `https://example.com`, website any URL. Save.
-5. Under **Keys and tokens**, generate and copy:
-   - API Key and API Key Secret
-   - Bearer Token
-   - Access Token and Access Token Secret (generate these *after* setting Read and write, or posting will fail with 403)
+Every 10 minutes the bot checks both accounts and adds new posts to a queue. When a posting slot comes up, it:
 
-## 2. Get a Claude API key
+1. **Filters** the queue:
+   - drops posts with videos or GIFs
+   - drops anything older than 4 hours
+   - drops stories that repeat something already posted
+2. **Ranks** every queued story 1–10 for how big, famous and relevant it is (Claude Haiku 4.5).
+3. **Picks** the top story. It alternates between Kalshi and Polymarket, unless the other account has a clearly bigger story (2+ points higher).
+4. **Rewrites** the story in fresh wording, keeping all facts, numbers, names and acronyms exactly as written. It strips links and @mentions, and skips ads, promos and memes.
+5. **Labels** the post:
+   - `BREAKING:` for major stories (score 8+)
+   - `JUST IN:` for everything else
+6. **Posts** it to X.
 
-https://console.anthropic.com → API Keys → Create key. Add ~$5 credit.
+Repeat protection works in three layers:
 
-## 3. Put it on GitHub
+- The same source post is never used twice.
+- A word-overlap check catches stories that are too similar.
+- Claude compares each new story against the last 40 posts and skips it if it's the same news in different words.
 
-1. Create a new **private** repo and upload everything in this folder (including the hidden `.github` folder).
-2. Repo → **Settings → Secrets and variables → Actions → New repository secret**. Add:
+## Files
 
-   | Name | Value |
-   |---|---|
-   | `X_API_KEY` | API Key |
-   | `X_API_SECRET` | API Key Secret |
-   | `X_BEARER_TOKEN` | Bearer Token |
-   | `X_ACCESS_TOKEN` | Access Token |
-   | `X_ACCESS_TOKEN_SECRET` | Access Token Secret |
-   | `ANTHROPIC_API_KEY` | Claude key |
+| File | What it is |
+|---|---|
+| `bot.py` | The bot |
+| `.github/workflows/bot.yml` | Runs the bot every 10 min on GitHub Actions |
+| `state.json` | The bot's memory: queue, what's been posted, last post time. **Don't edit while running.** |
+| `requirements.txt` | Python packages |
 
-3. (Optional) Under the **Variables** tab: `DRY_RUN` = `true` to test without posting, `SOURCE_ACCOUNTS` = `Kalshi,Polymarket,AnotherAccount` to change sources.
+## Secrets (Settings → Secrets and variables → Actions)
 
-## 4. Start it
+| Name | Where to get it |
+|---|---|
+| `X_API_KEY` | X Developer Console → app → Keys & Tokens → **Consumer Key** |
+| `X_API_SECRET` | Same popup → **Consumer Secret** |
+| `X_BEARER_TOKEN` | Keys & Tokens → **Bearer Token** |
+| `X_ACCESS_TOKEN` | Keys & Tokens → **Access Token** (must say *Read and write*) |
+| `X_ACCESS_TOKEN_SECRET` | Same popup → **Access Token Secret** |
+| `ANTHROPIC_API_KEY` | platform.claude.com → API Keys |
 
-Repo → **Actions** → enable workflows → **x-news-bot** → **Run workflow**.
+## Settings (optional: Settings → Secrets and variables → Actions → Variables)
 
-- The **first run** only bookmarks the latest posts (so it doesn't dump old news).
-- From then on it runs every ~10 minutes. Check the run logs to see each original vs. rewritten post.
-- To pause: Actions → x-news-bot → ⋯ → Disable workflow.
+| Variable | Default | What it does |
+|---|---|---|
+| `POSTS_PER_DAY` | `14` | Posts per day, spread evenly |
+| `MAX_AGE_HOURS` | `4` | Ignore news older than this |
+| `BREAKING_MIN_SCORE` | `8` | Score needed for a `BREAKING:` label |
+| `SOURCE_ACCOUNTS` | `Kalshi,Polymarket` | Accounts to watch |
+| `CLAUDE_MODEL` | `claude-haiku-4-5-20251001` | Model for ranking and rewriting |
+| `DRY_RUN` | `false` | `true` = log what it would post, without posting |
 
-## Cost (pay-per-use, Oct 2026)
+> Variables other than `SOURCE_ACCOUNTS` and `DRY_RUN` also need to be added to the `env:` block in `bot.yml` to take effect.
 
-- Reading: ~$0.005 per new post fetched
-- Posting: ~$0.015 per post (the bot strips links — posts with links cost ~$0.20)
-- Claude Haiku: well under $0.001 per rewrite
-- At ~100 posts/day total: roughly **$50–60/month** on X, ~$1 on Claude. GitHub Actions is free for this.
+## Checking on it
 
-## Tuning
+- **Actions** tab → open a run → **Run bot** step. It shows the queue, the ranking, and each original → rewritten post.
+- To pause: **Actions → x-news-bot → ⋯ → Disable workflow**.
+- To post right now (if a slot is due): **Actions → x-news-bot → Run workflow**.
 
-Edit `SYSTEM_PROMPT` in `bot.py` to change the voice/style. `MAX_POSTS_PER_RUN` (default 4) caps bursts.
+## Cost (approx.)
 
-## Heads up
+| | |
+|---|---|
+| X API | ~$0.005 per post read + ~$0.015 per post published. Links are stripped (posts with links cost ~$0.20). |
+| Claude Haiku | A few cents a day |
+| GitHub Actions | Free (private repo, within the free minutes) |
 
-GitHub disables scheduled workflows on repos with no activity for 60 days. The bot commits `state.json` whenever there's news, which normally keeps it active.
+At 14 posts/day the X credit lasts roughly a month per $20.
+
+## Notes
+
+- GitHub's scheduled runs can be delayed or skipped when it's busy. If runs stop, an external timer (e.g. cron-job.org) can trigger the workflow instead.
+- GitHub disables scheduled workflows after 60 days with no repo activity. The bot commits `state.json` regularly, which keeps it active.
