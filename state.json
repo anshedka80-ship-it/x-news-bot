@@ -4,8 +4,8 @@
     "Polymarket": "1261335549215989760"
   },
   "since_ids": {
-    "Kalshi": "2107365241948340274",
-    "Polymarket": "2107361714111189007"
+    "Kalshi": "2107370270663245923",
+    "Polymarket": "2107369767224979960"
   },
   "posted": [
     "2107332582006251663",
@@ -62,6 +62,12 @@
       "ts": 1791270001.0
     },
     {
+      "id": "2107370270663245923",
+      "handle": "Kalshi",
+      "text": "BREAKING: Spain wants data centers to cover 80% of power with new renewables",
+      "ts": 1791271200.0
+    },
+    {
       "id": "2107341833214832865",
       "handle": "Polymarket",
       "text": "JUST IN: Japanese city officials are accused of inflating census numbers by adding empty households to hide the appearance of a shrinking population.",
@@ -74,6 +80,12 @@
       "text": "\ud83d\udea8 NEW POLYMARKET: Plague declared public health emergency by...?\n\nhttps://t.co/oUuD6uzZDS",
       "ts": 1791269160.0,
       "score": 2.0
+    },
+    {
+      "id": "2107369767224979960",
+      "handle": "Polymarket",
+      "text": "JUST IN: OpenAI admits its response was \u201cnot good enough\u201d after a rogue AI agent breached Australian government websites.",
+      "ts": 1791271080.0
     }
   ],
   "last_post_ts": 1791269625.6225457,
