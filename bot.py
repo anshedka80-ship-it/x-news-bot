@@ -25,6 +25,7 @@ GAP_SECONDS = 86400 / POSTS_PER_DAY          # ~1h43m for 14/day
 GAP_TOLERANCE = 6 * 60                       # GitHub cron runs late sometimes
 MAX_AGE_SECONDS = int(float(os.getenv("MAX_AGE_HOURS", "3")) * 3600)  # drop stale news
 MAX_QUEUE_PER_SOURCE = 30
+READS_PER_SLOT = max(5, min(100, int(os.getenv("READS_PER_SLOT", "5"))))  # X API minimum is 5
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-sonnet-5-5")  # rewriting model
 DRY_RUN = os.getenv("DRY_RUN", "false").lower() == "true"
 STATE_FILE = Path(__file__).with_name("state.json")
@@ -172,7 +173,7 @@ def is_duplicate(text, recent, threshold=0.6):
 
 def rephrase(claude, original: str, recent_out: list[str], prefix: str = JUSTIN_PREFIX) -> str | None:
     if recent_out:
-        history = "\n".join(f"- {p}" for p in recent_out[-40:])
+        history = "\n".join(f"- {p}" for p in recent_out[-20:])
         prompt = (f"Posts already published recently:\n{history}\n\n"
                   "If the new post below reports the SAME story as one of those "
                   "(even if worded differently or with slightly updated numbers), "
@@ -211,7 +212,7 @@ def fetch_new(x, state, now):
         resp = x.get_users_tweets(
             state["user_ids"][handle],
             since_id=since,
-            max_results=5 if since is None else 20,
+            max_results=5 if since is None else READS_PER_SLOT,  # newest N only (cost)
             exclude=["retweets", "replies"],
             tweet_fields=["created_at", "note_tweet", "attachments"],
             expansions=["attachments.media_keys"],
@@ -310,7 +311,7 @@ def score_queue(claude, state):
     q = state["queue"]
     if not q:
         return
-    listing = "\n".join(f"{n}. [{i['handle']}] {i['text'][:300]}" for n, i in enumerate(q, 1))
+    listing = "\n".join(f"{n}. [{i['handle']}] {i['text'][:220]}" for n, i in enumerate(q, 1))
     try:
         msg = claude.messages.create(
             model=RANK_MODEL, max_tokens=1500, system=RANK_PROMPT,
@@ -418,15 +419,17 @@ def main():
     state = load_state()
     x = x_client()
 
+    wait = state["last_post_ts"] + GAP_SECONDS - GAP_TOLERANCE - now
+    if wait > 0 and all(h in state["since_ids"] for h in SOURCE_ACCOUNTS):
+        # Cost saving: X charges per post read, so we only read at posting time.
+        print(f"Next post slot in {int(wait // 60)} min (no X reads until then).")
+        return save_state(state)
+
     fetch_new(x, state, now)
     prune_queue(state, now)
     print(f"Queue: " + ", ".join(
         f"{h}={sum(1 for i in state['queue'] if i['handle'] == h)}" for h in SOURCE_ACCOUNTS))
-
-    wait = state["last_post_ts"] + GAP_SECONDS - GAP_TOLERANCE - now
-    if wait > 0:
-        print(f"Next post slot in {int(wait // 60)} min.")
-    else:
+    if wait <= 0:
         post_one(x, anthropic.Anthropic(), state, now)
 
     save_state(state)

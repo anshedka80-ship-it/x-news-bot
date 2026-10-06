@@ -4,7 +4,7 @@ Watches **@Kalshi** and **@Polymarket**, picks the biggest headline, rewrites it
 
 ## How it works
 
-Every 10 minutes the bot checks both accounts and adds new posts to a queue. When a posting slot comes up, it:
+Every 10 minutes the bot checks whether a posting slot is due. Only then does it read X (to save cost): the **5 newest posts** from each account since the last read go into the queue. Then it:
 
 1. **Filters** the queue:
    - drops posts with videos or GIFs
@@ -58,6 +58,7 @@ Repeat protection works in three layers:
 |---|---|---|
 | `POSTS_PER_DAY` | `14` | Posts per day, spread evenly |
 | `MAX_AGE_HOURS` | `3` | Ignore news older than this |
+| `READS_PER_SLOT` | `5` | Newest posts read per account at each slot (X minimum is 5; more = more choice, more cost) |
 | `BREAKING_MIN_SCORE` | `8` | Score needed for a `BREAKING:` label |
 | `SOURCE_ACCOUNTS` | `Kalshi,Polymarket` | Accounts to watch |
 | `PLATFORM_ASSETS` | almost any asset (crypto, commodities, stocks, indices, FX, bonds) | What if.market trades (used for relevance) |
@@ -70,7 +71,7 @@ Repeat protection works in three layers:
 
 ## Checking on it
 
-- **Actions** tab → open the run that is *in progress* → **Run bot every 10 minutes** step → expand a **Check N/34** group. It shows new posts queued, the ranking (`total (news, rel, age)`), and each original → rewritten post.
+- **Actions** tab → open the run that is *in progress* → **Run bot every 10 minutes** step → expand a **Check N/34** group. Between slots it just says "Next post slot in N min"; at a slot it shows the posts queued, the ranking (`total (news, rel, age)`), and the original → rewritten post.
 - **To pause:** open the in-progress run → **Cancel workflow**, then **x-news-bot → ⋯ → Disable workflow** (otherwise the backup schedule restarts it).
 - **To resume:** **Enable workflow**, then **Run workflow**.
 - Code changes pushed to `main` are picked up at the next 10-minute check, no restart needed.
@@ -79,11 +80,11 @@ Repeat protection works in three layers:
 
 | Item | How it's charged | Est. per month |
 |---|---|---|
-| X API: reading source posts | $0.005 per post read (~150–250 a day) | ~$21–35 |
+| X API: reading source posts | $0.005 per post read; only the 5 newest per account at each of the 14 slots (≤140 a day, ~100 in practice) | ~$15–21 |
 | X API: publishing | $0.015 per post (links stripped; a post with a link costs ~$0.20) × 14 a day | ~$6 |
-| Claude Sonnet 5.5: ranking + rewriting | $2 / $10 per million input / output tokens, ~28 calls a day | ~$5–6 |
+| Claude Sonnet 5.5: ranking + rewriting | $2 / $10 per million input / output tokens, ~28 calls a day | ~$4–5 |
 | GitHub Actions | Free (public repo) | $0 |
-| **Total** | | **~$30–45** |
+| **Total** | | **~$25–32** |
 
 Posting more often adds ~$0.025 per extra post (X + Claude): 24 posts a day ≈ +$8/month, 48 a day ≈ +$29/month. Reading cost doesn't change with posting frequency.
 
