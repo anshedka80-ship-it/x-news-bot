@@ -203,7 +203,7 @@ def prune_queue(state, now):
 RANK_MODEL = os.getenv("RANK_MODEL", "claude-sonnet-5-5")
 BOTH_SOURCES_BOOST = 2.0        # story reported by both Kalshi AND Polymarket
 FRESHNESS_PENALTY_PER_HOUR = 0.75  # older queued stories slowly lose points
-PLATFORM_ASSETS = os.getenv("PLATFORM_ASSETS", "BTC, ETH, SOL, Oil, Gold, TSLA")
+PLATFORM_ASSETS = os.getenv("PLATFORM_ASSETS", "almost any asset: crypto (BTC, ETH, SOL...), commodities (oil, gold...), individual stocks, indices, currencies and bonds")
 PLATFORM_WEIGHT = float(os.getenv("PLATFORM_WEIGHT", "1.0"))  # points per relevance level (0-3)
 
 RANK_PROMPT = """You are the editor of the X account of if.market, "the first
@@ -228,13 +228,14 @@ data, minor celebrity gossip, memes, vague teasers.
 
 2) "relevance" 0-3: how well the story fits if.market (an event whose outcome
 would move one of its assets):
-- 3 = a clear "if X happens, asset Y moves" story on """ + PLATFORM_ASSETS + """:
-  e.g. strikes/sanctions/OPEC decisions (oil), Fed/ECB decisions, inflation or
-  jobs data (BTC, gold), crypto regulation, ETF approvals, exchange hacks
-  (BTC/ETH/SOL), Tesla/Elon decisions, launches or deliveries (TSLA). Pending,
-  threatened or upcoming decisions are the BEST fit (users can trade the scenario).
-- 2 = clearly moves broad markets or a big company/sector: tariffs, wars,
-  elections, recession signals, the dollar, big-tech/AI earnings and deals
+- 3 = a clear "if X happens, asset Y moves" story on ANY tradable asset or
+  company: e.g. strikes/sanctions/OPEC (oil), Fed/ECB/rate decisions, inflation
+  or jobs data (BTC, gold, indices, dollar), crypto regulation, ETF approvals,
+  hacks (crypto), earnings, deals, product launches, lawsuits, CEO moves or
+  bans affecting a listed company (that stock). Pending, threatened or upcoming
+  decisions are the BEST fit (users can trade the scenario).
+- 2 = market-moving but less direct or harder to map to one asset: wars,
+  elections, tariffs, recession signals, big policy shifts
 - 1 = some indirect market or policy angle
 - 0 = no market angle (sports, entertainment, culture, gossip)
 
