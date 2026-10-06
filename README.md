@@ -36,9 +36,9 @@ Repeat protection works in three layers:
 
 | File | What it is |
 |---|---|
-| `bot.py` | The bot |
-| `.github/workflows/bot.yml` | Runs the bot every 10 min on GitHub Actions |
-| `state.json` | The bot's memory: queue, what's been posted, last post time. **Don't edit while running.** |
+| `bot.py` | The bot: fetch, rank, rewrite, post |
+| `.github/workflows/bot.yml` | Runs the bot on GitHub Actions: each run checks every 10 min for ~5h40m, then starts the next run itself (a backup schedule every 2 hours restarts it if the chain breaks) |
+| `state.json` | The bot's memory: queue with scores, what's been posted, last post time. Committed after every check. **Don't edit while running.** |
 | `requirements.txt` | Python packages |
 
 ## Secrets (Settings → Secrets and variables → Actions)
@@ -70,21 +70,25 @@ Repeat protection works in three layers:
 
 ## Checking on it
 
-- **Actions** tab → open a run → **Run bot** step. It shows the queue, the ranking, and each original → rewritten post.
-- To pause: **Actions → x-news-bot → ⋯ → Disable workflow**.
-- To post right now (if a slot is due): **Actions → x-news-bot → Run workflow**.
+- **Actions** tab → open the run that is *in progress* → **Run bot every 10 minutes** step → expand a **Check N/34** group. It shows new posts queued, the ranking (`total (news, rel, age)`), and each original → rewritten post.
+- **To pause:** open the in-progress run → **Cancel workflow**, then **x-news-bot → ⋯ → Disable workflow** (otherwise the backup schedule restarts it).
+- **To resume:** **Enable workflow**, then **Run workflow**.
+- Code changes pushed to `main` are picked up at the next 10-minute check, no restart needed.
 
-## Cost (approx.)
+## Cost (approx., per month)
 
-| | |
-|---|---|
-| X API | ~$0.005 per post read + ~$0.015 per post published. Links are stripped (posts with links cost ~$0.20). |
-| Claude Sonnet 5.5 (ranking + rewriting) | ~$5–6 a month |
-| GitHub Actions | Free (private repo, within the free minutes) |
+| Item | How it's charged | Est. per month |
+|---|---|---|
+| X API: reading source posts | $0.005 per post read (~150–250 a day) | ~$21–35 |
+| X API: publishing | $0.015 per post (links stripped; a post with a link costs ~$0.20) × 14 a day | ~$6 |
+| Claude Sonnet 5.5: ranking + rewriting | $2 / $10 per million input / output tokens, ~28 calls a day | ~$5–6 |
+| GitHub Actions | Free (public repo) | $0 |
+| **Total** | | **~$30–45** |
 
-At 14 posts/day the X credit lasts roughly a month per $20.
+Posting more often adds ~$0.025 per extra post (X + Claude): 24 posts a day ≈ +$8/month, 48 a day ≈ +$29/month. Reading cost doesn't change with posting frequency.
 
 ## Notes
 
-- GitHub's scheduled runs can be delayed or skipped when it's busy. If runs stop, an external timer (e.g. cron-job.org) can trigger the workflow instead.
-- GitHub disables scheduled workflows after 60 days with no repo activity. The bot commits `state.json` regularly, which keeps it active.
+- API keys are stored as encrypted GitHub secrets; they never appear in the code or the public logs.
+- GitHub's own cron was unreliable for this new repo, which is why the workflow keeps itself running in a loop instead of relying on it.
+- If the X or Claude credit runs out, checks keep running but posting fails (shown as `Post failed` / `Claude error` in the log) until credit is added.
