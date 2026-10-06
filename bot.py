@@ -38,6 +38,8 @@ should be rewritten. Headlines starting with "JUST IN", "BREAKING", etc. are new
 Rules:
 - Rephrase in fresh wording and sentence structure. Never copy phrases verbatim.
 - Keep every fact, number, percentage, name and date exactly accurate. Do not add facts.
+- Keep acronyms, abbreviations, tickers and jargon exactly as written (e.g. "SI",
+  "ETF", "CPI"). Never guess or spell out what an acronym stands for.
 - Max 260 characters. Plain text. At most one emoji. No hashtags.
 - No URLs or links of any kind.
 - Do not mention Kalshi, Polymarket, or any source account or @handle.
