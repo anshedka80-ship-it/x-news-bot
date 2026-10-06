@@ -147,6 +147,15 @@ def clean(text: str) -> str:
     return text
 
 
+def balance_quotes(text: str) -> str:
+    """Close an unmatched quotation mark so a post never ends mid-quote."""
+    if text.count('"') % 2 == 1:
+        text += '"'
+    if text.count('\u201c') > text.count('\u201d'):
+        text += '\u201d'
+    return text
+
+
 def _words(s):
     return set(re.findall(r"[a-z0-9%$.]+", PREFIX_RE.sub("", clean(s)).lower()))
 
@@ -182,6 +191,7 @@ def rephrase(claude, original: str, recent_out: list[str], prefix: str = JUSTIN_
         return None
     # Always start with the fixed prefix; drop any prefix Claude/source added.
     out = PREFIX_RE.sub("", out).strip()
+    out = balance_quotes(out)
     room = 280 - len(prefix)
     if len(out) > room:
         out = out[:room - 1].rsplit(" ", 1)[0] + "…"
