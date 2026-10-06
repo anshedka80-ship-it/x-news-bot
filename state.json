@@ -4,7 +4,7 @@
     "Polymarket": "1261335549215989760"
   },
   "since_ids": {
-    "Kalshi": "2107385370153300142",
+    "Kalshi": "2107390403200831834",
     "Polymarket": "2107386376639463478"
   },
   "posted": [
@@ -121,6 +121,12 @@
       "relevance": 2.0,
       "both": false,
       "importance": 5.0
+    },
+    {
+      "id": "2107390403200831834",
+      "handle": "Kalshi",
+      "text": "JUST IN: Anthropic says it would accept a law requiring SI firms to report hacks",
+      "ts": 1791276000.0
     },
     {
       "id": "2107341833214832865",
