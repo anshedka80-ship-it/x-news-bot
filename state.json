@@ -4,7 +4,7 @@
     "Polymarket": "1261335549215989760"
   },
   "since_ids": {
-    "Kalshi": "2107375303706440057",
+    "Kalshi": "2107380346614673462",
     "Polymarket": "2107369767224979960"
   },
   "posted": [
@@ -72,6 +72,12 @@
       "handle": "Kalshi",
       "text": "JUST IN: AMD CEO says their investment in Taiwan is progressing and they'll \"boost the figure\"",
       "ts": 1791272400.0
+    },
+    {
+      "id": "2107380346614673462",
+      "handle": "Kalshi",
+      "text": "JUST IN: Japan's trade minister says China uses rare earths for \"economic coercion\" https://t.co/WZJFuOSyUm",
+      "ts": 1791273602.0
     },
     {
       "id": "2107341833214832865",
