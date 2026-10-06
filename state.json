@@ -20,8 +20,8 @@
     "JUST IN: New Zealand police reveal the Flydubai co-pilot hijacker completed a portion of his flight training in the country."
   ],
   "recent_out": [
-    "CertiK reports security intelligence agents now have the capability to track stolen cryptocurrency and halt potentially dangerous smart contracts \u26a0\ufe0f",
-    "BREAKING: Ray Dalio cautions that the US could face a debt crisis within the next three years \ud83d\udcc9",
+    "CertiK reports security intelligence agents now have the capability to track stolen cryptocurrency and halt potentially dangerous smart contracts ⚠️",
+    "BREAKING: Ray Dalio cautions that the US could face a debt crisis within the next three years 📉",
     "JUST IN: Japan's trade minister says China uses rare earths for \"economic coercion",
     "JUST IN: New Zealand police say the Flydubai co-pilot hijacker completed part of his flight training in the country"
   ],
@@ -30,113 +30,113 @@
       "id": "2107370270663245923",
       "handle": "Kalshi",
       "text": "BREAKING: Spain wants data centers to cover 80% of power with new renewables",
-      "ts": 1791271200.0,
-      "score": 4.0,
+      "ts": 1791271200,
+      "score": 4,
       "story": "spain data center renewables rule",
-      "relevance": 2.0,
+      "relevance": 2,
       "both": false,
-      "importance": 4.0
+      "importance": 4
     },
     {
       "id": "2107375303706440057",
       "handle": "Kalshi",
       "text": "JUST IN: AMD CEO says their investment in Taiwan is progressing and they'll \"boost the figure\"",
-      "ts": 1791272400.0,
-      "score": 4.0,
+      "ts": 1791272400,
+      "score": 4,
       "story": "amd taiwan investment",
-      "relevance": 3.0,
+      "relevance": 3,
       "both": false,
-      "importance": 4.0
+      "importance": 4
     },
     {
       "id": "2107385370153300142",
       "handle": "Kalshi",
       "text": "JUST IN: Moonshot targets an IPO in Q1 2027 after hitting a $50 billion valuation",
-      "ts": 1791274800.0,
-      "score": 5.0,
+      "ts": 1791274800,
+      "score": 5,
       "story": "moonshot ipo 2027",
-      "relevance": 2.0,
+      "relevance": 2,
       "both": false,
-      "importance": 5.0
+      "importance": 5
     },
     {
       "id": "2107390403200831834",
       "handle": "Kalshi",
       "text": "JUST IN: Anthropic says it would accept a law requiring SI firms to report hacks",
-      "ts": 1791276000.0,
-      "score": 4.0,
+      "ts": 1791276000,
+      "score": 4,
       "story": "anthropic hack reporting law",
-      "relevance": 2.0,
+      "relevance": 2,
       "both": false,
-      "importance": 4.0
+      "importance": 4
     },
     {
       "id": "2107395452002083326",
       "handle": "Kalshi",
       "text": "JUST IN: Trump says taxpayers will no longer fund TV ads featuring himself",
-      "ts": 1791277203.0,
-      "score": 3.0,
+      "ts": 1791277203,
+      "score": 3,
       "story": "trump no taxpayer tv ads",
-      "relevance": 1.0,
+      "relevance": 1,
       "both": false,
-      "importance": 3.0
+      "importance": 3
     },
     {
       "id": "2107400469786288286",
       "handle": "Kalshi",
       "text": "JUST IN: 64% chance Democrats win both chambers of Congress https://t.co/fzLa7eZrEc",
-      "ts": 1791278400.0,
-      "score": 4.0,
+      "ts": 1791278400,
+      "score": 4,
       "story": "democrats win congress odds",
-      "relevance": 2.0,
+      "relevance": 2,
       "both": false,
-      "importance": 4.0
+      "importance": 4
     },
     {
       "id": "2107405502736970213",
       "handle": "Kalshi",
       "text": "JUST IN: US flies all its bombers out of UK base threatened by suspected terrorist attack",
-      "ts": 1791279600.0,
-      "score": 6.0,
+      "ts": 1791279600,
+      "score": 6,
       "story": "us bombers leave uk base",
-      "relevance": 2.0,
+      "relevance": 2,
       "both": false,
-      "importance": 6.0
+      "importance": 6
     },
     {
       "id": "2107410548275007965",
       "handle": "Kalshi",
       "text": "BREAKING: Customer sues McDonald's, alleging their SI tool coordinates menu prices",
-      "ts": 1791280803.0,
-      "score": 3.0,
+      "ts": 1791280803,
+      "score": 3,
       "story": "mcdonalds ai pricing lawsuit",
-      "relevance": 3.0,
+      "relevance": 3,
       "both": false,
-      "importance": 3.0
+      "importance": 3
     },
     {
       "id": "2107369767224979960",
       "handle": "Polymarket",
-      "text": "JUST IN: OpenAI admits its response was \u201cnot good enough\u201d after a rogue AI agent breached Australian government websites.",
-      "ts": 1791271080.0,
-      "score": 5.0,
+      "text": "JUST IN: OpenAI admits its response was “not good enough” after a rogue AI agent breached Australian government websites.",
+      "ts": 1791271080,
+      "score": 5,
       "story": "rogue ai agent australia breach",
-      "relevance": 2.0,
+      "relevance": 2,
       "both": false,
-      "importance": 5.0
+      "importance": 5
     },
     {
       "id": "2107386376639463478",
       "handle": "Polymarket",
-      "text": "\ud83d\udea8 NEW POLYMARKET: Spain General Election Winner\n\nhttps://t.co/LOfIHxRXi4",
-      "ts": 1791275040.0,
-      "score": 2.0,
+      "text": "🚨 NEW POLYMARKET: Spain General Election Winner\n\nhttps://t.co/LOfIHxRXi4",
+      "ts": 1791275040,
+      "score": 2,
       "story": "spain election market",
-      "relevance": 1.0,
+      "relevance": 1,
       "both": false,
-      "importance": 2.0
+      "importance": 2
     }
   ],
-  "last_post_ts": 1791281677.216635,
+  "last_post_ts": 0,
   "last_source": "Polymarket"
 }
