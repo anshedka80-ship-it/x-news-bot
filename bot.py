@@ -29,7 +29,11 @@ CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-haiku-4-5-20251001")
 DRY_RUN = os.getenv("DRY_RUN", "false").lower() == "true"
 STATE_FILE = Path(__file__).with_name("state.json")
 
-SYSTEM_PROMPT = """You rewrite prediction-market news posts for an X account.
+SYSTEM_PROMPT = """You rewrite breaking-news posts for an X news account.
+
+The source accounts post short headlines on ANY topic (politics, crypto, AI/tech,
+economy, sports, world events, markets, odds). All of these count as news and
+should be rewritten. Headlines starting with "JUST IN", "BREAKING", etc. are news.
 
 Rules:
 - Rephrase in fresh wording and sentence structure. Never copy phrases verbatim.
@@ -38,9 +42,10 @@ Rules:
 - No URLs or links of any kind.
 - Do not mention Kalshi, Polymarket, or any source account or @handle.
 - Never refer to a video, clip, image, chart or "watch"/"see below".
-- If the post is NOT a news update (e.g. promo, giveaway, ad, job post, meme with no
-  info, reply-bait, "sign up"/"download" calls to action), or it only makes sense
-  with its video/image, output exactly: SKIP
+- Output exactly SKIP ONLY if the post is clearly not news: an ad/promo for the
+  platform itself, giveaway, job post, pure meme/joke with no information,
+  reply-bait question, "sign up"/"download"/"trade now" call to action, or it
+  only makes sense with its video/image. When in doubt, rewrite it.
 Output only the rewritten post, nothing else."""
 
 
@@ -100,12 +105,15 @@ def is_duplicate(text, recent, threshold=0.6):
 
 
 def rephrase(claude, original: str, recent_out: list[str]) -> str | None:
-    history = "\n".join(f"- {p}" for p in recent_out[-40:]) or "(none yet)"
-    prompt = (f"Posts already published recently:\n{history}\n\n"
-              "If the new post below covers the SAME story or the same market update "
-              "as any of those (even if worded differently or with slightly updated "
-              "odds), output exactly: SKIP\n\n"
-              f"New post to rewrite:\n{original}")
+    if recent_out:
+        history = "\n".join(f"- {p}" for p in recent_out[-40:])
+        prompt = (f"Posts already published recently:\n{history}\n\n"
+                  "If the new post below reports the SAME story as one of those "
+                  "(even if worded differently or with slightly updated numbers), "
+                  "output exactly: SKIP. A different story on a similar topic is fine.\n\n"
+                  f"New post to rewrite:\n{original}")
+    else:
+        prompt = f"New post to rewrite:\n{original}"
     msg = claude.messages.create(
         model=CLAUDE_MODEL,
         max_tokens=300,
