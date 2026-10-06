@@ -20,7 +20,7 @@ Every 10 minutes the bot checks whether a posting slot is due. Only then does it
    - **+0 to +3 for if.market relevance**: how directly the event moves the assets traded on if.market (clear "if X happens, asset Y moves" stories on any tradable asset or listed company, especially pending or upcoming decisions = +3; market-moving but harder to map to one asset, like wars, elections, tariffs = +2; indirect = +1; sports/entertainment = 0)
    - **+2** if Kalshi *and* Polymarket both report the same story (only one copy is posted)
    - **Freshness as a tie-breaker:** +0.5 if under 30 minutes old and −0.5 per hour of age, so relevance decides and age only separates similar stories (stories older than 3 hours are dropped)
-3. **Picks** the top story. It alternates between Kalshi and Polymarket, unless the other account has a clearly bigger story (2+ points higher).
+3. **Picks** the single best-scoring story across both Kalshi and Polymarket (no taking turns).
 4. **Rewrites** the story in wire-service style (Sonnet 5.5): short, direct, no hype, no emojis, no hashtags, in fresh wording, keeping all facts, numbers, names and acronyms exactly as written. It strips links and @mentions, and skips ads, promos and memes.
 5. **Labels** the post:
    - `BREAKING:` for major stories (score 8+)

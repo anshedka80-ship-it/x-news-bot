@@ -371,16 +371,8 @@ def final_score(i, now):
 
 
 def pick_order(state, now):
-    """Best final score first; prefer the source that didn't post last
-    unless the other source has a clearly bigger story (2+ points)."""
-    q = sorted(state["queue"], key=lambda i: (final_score(i, now), int(i["id"])), reverse=True)
-    if not q:
-        return []
-    others = [i for i in q if i["handle"] != state["last_source"]]
-    if others and final_score(others[0], now) >= final_score(q[0], now) - 2:
-        q.remove(others[0])
-        q.insert(0, others[0])
-    return q
+    """Best final score first, across both sources (no alternation)."""
+    return sorted(state["queue"], key=lambda i: (final_score(i, now), int(i["id"])), reverse=True)
 
 
 def post_one(x, claude, state, now):
