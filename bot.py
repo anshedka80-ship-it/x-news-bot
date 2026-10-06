@@ -40,7 +40,7 @@ Rules:
 - Keep every fact, number, percentage, name and date exactly accurate. Do not add facts.
 - Keep acronyms, abbreviations, tickers and jargon exactly as written (e.g. "SI",
   "ETF", "CPI"). Never guess or spell out what an acronym stands for.
-- Do NOT start with "JUST IN", "BREAKING" or similar; a "JUST IN:" prefix is added
+- Do NOT start with "JUST IN", "BREAKING" or similar; the right prefix is added
   automatically. Write only the headline itself.
 - Max 250 characters. Plain text. At most one emoji. No hashtags.
 - No URLs or links of any kind.
@@ -83,7 +83,9 @@ def x_client():
     )
 
 
-PREFIX = os.getenv("POST_PREFIX", "JUST IN: ")
+BREAKING_PREFIX = "BREAKING: "   # used for the biggest stories
+JUSTIN_PREFIX = "JUST IN: "      # used for everything else
+BREAKING_MIN_SCORE = float(os.getenv("BREAKING_MIN_SCORE", "8"))
 PREFIX_RE = re.compile(r"^\W*(just in|breaking( news)?|update|developing)\s*[:\-–—]\s*", re.I)
 
 URL_RE = re.compile(r"https?://\S+|\bt\.co/\S+|\bwww\.\S+", re.I)
@@ -111,7 +113,7 @@ def is_duplicate(text, recent, threshold=0.6):
     return False
 
 
-def rephrase(claude, original: str, recent_out: list[str]) -> str | None:
+def rephrase(claude, original: str, recent_out: list[str], prefix: str = JUSTIN_PREFIX) -> str | None:
     if recent_out:
         history = "\n".join(f"- {p}" for p in recent_out[-40:])
         prompt = (f"Posts already published recently:\n{history}\n\n"
@@ -132,10 +134,10 @@ def rephrase(claude, original: str, recent_out: list[str]) -> str | None:
         return None
     # Always start with the fixed prefix; drop any prefix Claude/source added.
     out = PREFIX_RE.sub("", out).strip()
-    room = 280 - len(PREFIX)
+    room = 280 - len(prefix)
     if len(out) > room:
         out = out[:room - 1].rsplit(" ", 1)[0] + "…"
-    return PREFIX + out
+    return prefix + out
 
 
 # ---------- steps ----------
@@ -252,7 +254,9 @@ def post_one(x, claude, state, now):
             print(f"SKIP duplicate story @{handle}/{item['id']}")
             continue
         try:
-            new_text = rephrase(claude, item["text"], state["recent_out"])
+            prefix = (BREAKING_PREFIX if item.get("score", 0) >= BREAKING_MIN_SCORE
+                      else JUSTIN_PREFIX)
+            new_text = rephrase(claude, item["text"], state["recent_out"], prefix)
         except Exception as e:
             print(f"Claude error on {item['id']}: {e}")
             continue
