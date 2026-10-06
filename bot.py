@@ -1,9 +1,10 @@
 """
-X news bot: watches source accounts (Kalshi, Polymarket), rephrases new posts
-with Claude, and posts them to your X account.
+X news bot: watches source accounts (Kalshi, Polymarket), queues their new
+posts, and publishes ONE rephrased post at a time, spread evenly across the
+day and alternating between sources.
 
-Designed to run once per invocation (GitHub Actions cron). State is kept in
-state.json so the same tweet is never posted twice.
+Runs once per invocation (GitHub Actions cron every 10 min). State lives in
+state.json so nothing is posted twice.
 """
 
 import json
@@ -19,8 +20,11 @@ import tweepy
 # ---------- config ----------
 SOURCE_ACCOUNTS = [a.strip().lstrip("@") for a in
                    os.getenv("SOURCE_ACCOUNTS", "Kalshi,Polymarket").split(",") if a.strip()]
-MAX_POSTS_PER_RUN = int(os.getenv("MAX_POSTS_PER_RUN", "4"))
-MAX_POSTS_PER_DAY = int(os.getenv("MAX_POSTS_PER_DAY", "20"))  # budget guard
+POSTS_PER_DAY = int(os.getenv("POSTS_PER_DAY", "14"))
+GAP_SECONDS = 86400 / POSTS_PER_DAY          # ~1h43m for 14/day
+GAP_TOLERANCE = 6 * 60                       # GitHub cron runs late sometimes
+MAX_AGE_SECONDS = int(os.getenv("MAX_AGE_HOURS", "4")) * 3600  # drop stale news
+MAX_QUEUE_PER_SOURCE = 30
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-haiku-4-5-20251001")
 DRY_RUN = os.getenv("DRY_RUN", "false").lower() == "true"
 STATE_FILE = Path(__file__).with_name("state.json")
@@ -33,24 +37,33 @@ Rules:
 - Max 260 characters. Plain text. At most one emoji. No hashtags.
 - No URLs or links of any kind.
 - Do not mention Kalshi, Polymarket, or any source account or @handle.
+- Never refer to a video, clip, image, chart or "watch"/"see below".
 - If the post is NOT a news update (e.g. promo, giveaway, ad, job post, meme with no
-  info, reply-bait, "sign up"/"download" calls to action), output exactly: SKIP
+  info, reply-bait, "sign up"/"download" calls to action), or it only makes sense
+  with its video/image, output exactly: SKIP
 Output only the rewritten post, nothing else."""
 
 
 # ---------- state ----------
 def load_state():
-    if STATE_FILE.exists():
-        return json.loads(STATE_FILE.read_text())
-    return {"user_ids": {}, "since_ids": {}, "posted": []}
+    s = json.loads(STATE_FILE.read_text()) if STATE_FILE.exists() else {}
+    s.setdefault("user_ids", {})
+    s.setdefault("since_ids", {})
+    s.setdefault("posted", [])
+    s.setdefault("recent", [])       # source texts we've used
+    s.setdefault("recent_out", [])   # what we actually posted
+    s.setdefault("queue", [])
+    s.setdefault("last_post_ts", 0)
+    s.setdefault("last_source", "")
+    return s
 
 
 def save_state(state):
-    state["posted"] = state["posted"][-500:]  # keep file small
+    state["posted"] = state["posted"][-500:]
     STATE_FILE.write_text(json.dumps(state, indent=2) + "\n")
 
 
-# ---------- clients ----------
+# ---------- helpers ----------
 def x_client():
     return tweepy.Client(
         bearer_token=os.environ["X_BEARER_TOKEN"],
@@ -66,25 +79,10 @@ URL_RE = re.compile(r"https?://\S+|\bt\.co/\S+|\bwww\.\S+", re.I)
 
 def clean(text: str) -> str:
     text = URL_RE.sub("", text)
-    text = re.sub(r"@\w+", "", text)          # never tag anyone
+    text = re.sub(r"@\w+", "", text)
     text = re.sub(r"[ \t]+", " ", text)
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip().strip('"').strip()
-
-
-def rephrase(claude, original: str) -> str | None:
-    msg = claude.messages.create(
-        model=CLAUDE_MODEL,
-        max_tokens=300,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": original}],
-    )
-    out = clean("".join(b.text for b in msg.content if b.type == "text"))
-    if not out or out.upper().startswith("SKIP"):
-        return None
-    if len(out) > 280:
-        out = out[:277].rsplit(" ", 1)[0] + "…"
-    return out
 
 
 def _words(s):
@@ -101,88 +99,149 @@ def is_duplicate(text, recent, threshold=0.6):
     return False
 
 
-# ---------- main ----------
-def main():
-    state = load_state()
-    x = x_client()
-    claude = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY
+def rephrase(claude, original: str, recent_out: list[str]) -> str | None:
+    history = "\n".join(f"- {p}" for p in recent_out[-40:]) or "(none yet)"
+    prompt = (f"Posts already published recently:\n{history}\n\n"
+              "If the new post below covers the SAME story or the same market update "
+              "as any of those (even if worded differently or with slightly updated "
+              "odds), output exactly: SKIP\n\n"
+              f"New post to rewrite:\n{original}")
+    msg = claude.messages.create(
+        model=CLAUDE_MODEL,
+        max_tokens=300,
+        system=SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    out = clean("".join(b.text for b in msg.content if b.type == "text"))
+    if not out or out.upper().startswith("SKIP"):
+        return None
+    if len(out) > 280:
+        out = out[:277].rsplit(" ", 1)[0] + "…"
+    return out
 
-    # Resolve handles -> user IDs once, then cache (saves API cost).
+
+# ---------- steps ----------
+def fetch_new(x, state, now):
+    """Pull new posts from each source into the queue (videos excluded)."""
     for handle in SOURCE_ACCOUNTS:
         if handle not in state["user_ids"]:
             u = x.get_user(username=handle, user_auth=False)
             state["user_ids"][handle] = str(u.data.id)
-            print(f"Resolved @{handle} -> {u.data.id}")
 
-    queue = []  # (tweet_id, handle, text)
     for handle in SOURCE_ACCOUNTS:
-        uid = state["user_ids"][handle]
         since = state["since_ids"].get(handle)
         resp = x.get_users_tweets(
-            uid,
+            state["user_ids"][handle],
             since_id=since,
             max_results=5 if since is None else 20,
             exclude=["retweets", "replies"],
-            tweet_fields=["created_at", "note_tweet"],
+            tweet_fields=["created_at", "note_tweet", "attachments"],
+            expansions=["attachments.media_keys"],
+            media_fields=["type"],
             user_auth=False,
         )
         tweets = resp.data or []
         if not tweets:
             print(f"@{handle}: nothing new")
             continue
-        newest = max(int(t.id) for t in tweets)
+        state["since_ids"][handle] = str(max(int(t.id) for t in tweets))
         if since is None:
-            # First run: just bookmark the latest post so we don't flood old news.
-            state["since_ids"][handle] = str(newest)
-            print(f"@{handle}: first run, bookmarked {newest}")
+            print(f"@{handle}: first run, bookmarked latest")
             continue
-        state["since_ids"][handle] = str(newest)
+
+        video_keys = {m.media_key for m in (resp.includes or {}).get("media", [])
+                      if m.type in ("video", "animated_gif")}
+        added = 0
+        seen = set(state["posted"]) | {i["id"] for i in state["queue"]}
         for t in tweets:
-            full = (t.data.get("note_tweet") or {}).get("text")  # long posts
-            queue.append((int(t.id), handle, full or t.text))
+            if str(t.id) in seen:
+                continue
+            keys = set((t.data.get("attachments") or {}).get("media_keys", []))
+            if keys & video_keys:
+                print(f"@{handle}/{t.id}: has video, skipped")
+                continue
+            text = (t.data.get("note_tweet") or {}).get("text") or t.text
+            ts = t.created_at.timestamp() if t.created_at else now
+            state["queue"].append({"id": str(t.id), "handle": handle,
+                                   "text": text, "ts": ts})
+            added += 1
+        print(f"@{handle}: queued {added} new")
 
-    queue.sort(key=lambda q: q[0])  # oldest first
-    if len(queue) > MAX_POSTS_PER_RUN:
-        print(f"{len(queue)} new posts; keeping newest {MAX_POSTS_PER_RUN}")
-        queue = queue[-MAX_POSTS_PER_RUN:]
 
-    today = time.strftime("%Y-%m-%d", time.gmtime())
-    if state.get("day") != today:
-        state["day"], state["day_count"] = today, 0
+def prune_queue(state, now):
+    done = set(state["posted"])
+    q = [i for i in state["queue"]
+         if i["id"] not in done and now - i["ts"] <= MAX_AGE_SECONDS]
+    # keep queue bounded per source (newest kept)
+    trimmed = []
+    for h in SOURCE_ACCOUNTS:
+        items = sorted([i for i in q if i["handle"] == h], key=lambda i: int(i["id"]))
+        trimmed += items[-MAX_QUEUE_PER_SOURCE:]
+    state["queue"] = trimmed
 
-    posted_ids = set(state["posted"])
-    for tid, handle, text in queue:
-        if str(tid) in posted_ids:
-            continue
-        if state["day_count"] >= MAX_POSTS_PER_DAY:
-            print(f"Daily cap of {MAX_POSTS_PER_DAY} reached; skipping the rest.")
-            state["posted"].append(str(tid))
-            continue
-        try:
-            new_text = rephrase(claude, text)
-        except Exception as e:
-            print(f"Claude error on {tid}: {e}")
-            continue
-        state["posted"].append(str(tid))  # mark handled either way
-        if not new_text:
-            print(f"SKIP (not news) @{handle}/{tid}")
-            continue
-        if is_duplicate(text, state.setdefault("recent", [])):
-            print(f"SKIP (same story already posted) @{handle}/{tid}")
-            continue
-        state["recent"] = (state["recent"] + [text])[-40:]
-        print(f"\n@{handle}/{tid}\n  IN : {text!r}\n  OUT: {new_text!r}")
-        if DRY_RUN:
-            continue
-        try:
-            x.create_tweet(text=new_text)
-            state["day_count"] += 1
-            time.sleep(20)  # space out posts
-        except tweepy.TooManyRequests:
-            print("Rate limited by X; stopping this run.")
-            break
-        except tweepy.TweepyException as e:
-            print(f"Post failed for {tid}: {e}")
+
+def source_order(state):
+    """Alternate: start with the source that did NOT post last."""
+    srcs = list(SOURCE_ACCOUNTS)
+    if state["last_source"] in srcs:
+        srcs.remove(state["last_source"])
+        srcs.append(state["last_source"])
+    return srcs
+
+
+def post_one(x, claude, state, now):
+    for handle in source_order(state):
+        # newest first within that source
+        items = sorted([i for i in state["queue"] if i["handle"] == handle],
+                       key=lambda i: int(i["id"]), reverse=True)
+        for item in items:
+            state["queue"].remove(item)
+            state["posted"].append(item["id"])
+            if is_duplicate(item["text"], state["recent"] + state["recent_out"]):
+                print(f"SKIP duplicate story @{handle}/{item['id']}")
+                continue
+            try:
+                new_text = rephrase(claude, item["text"], state["recent_out"])
+            except Exception as e:
+                print(f"Claude error on {item['id']}: {e}")
+                continue
+            if not new_text:
+                print(f"SKIP (not news or already covered) @{handle}/{item['id']}")
+                continue
+            if is_duplicate(new_text, state["recent_out"], threshold=0.5):
+                print(f"SKIP rewrite too similar to a recent post @{handle}/{item['id']}")
+                continue
+            print(f"\n@{handle}/{item['id']}\n  IN : {item['text']!r}\n  OUT: {new_text!r}")
+            if not DRY_RUN:
+                try:
+                    x.create_tweet(text=new_text)
+                except tweepy.TweepyException as e:
+                    print(f"Post failed: {e}")
+                    return
+            state["recent"] = (state["recent"] + [item["text"]])[-100:]
+            state["recent_out"] = (state["recent_out"] + [new_text])[-100:]
+            state["last_post_ts"] = now
+            state["last_source"] = handle
+            return
+    print("Queue empty — nothing to post this slot.")
+
+
+# ---------- main ----------
+def main():
+    now = time.time()
+    state = load_state()
+    x = x_client()
+
+    fetch_new(x, state, now)
+    prune_queue(state, now)
+    print(f"Queue: " + ", ".join(
+        f"{h}={sum(1 for i in state['queue'] if i['handle'] == h)}" for h in SOURCE_ACCOUNTS))
+
+    wait = state["last_post_ts"] + GAP_SECONDS - GAP_TOLERANCE - now
+    if wait > 0:
+        print(f"Next post slot in {int(wait // 60)} min.")
+    else:
+        post_one(x, anthropic.Anthropic(), state, now)
 
     save_state(state)
 
