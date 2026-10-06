@@ -2,7 +2,7 @@ name: x-news-bot
 
 on:
   schedule:
-    - cron: "*/10 * * * *"   # every 10 min (GitHub may delay a few minutes)
+    - cron: "7,17,27,37,47,57 * * * *"   # every 10 min, off-peak minutes
   workflow_dispatch:          # "Run workflow" button for manual tests
 
 permissions:
