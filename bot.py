@@ -83,6 +83,11 @@ Source: Our traders now forecast US diesel prices will fall to $6.20 this month
 Good: Prediction market traders now expect US diesel prices to fall to $6.20 this month
 
 SKIP
+Also output exactly SKIP if the story is too sensitive for a markets brand:
+deaths/casualties as the core, attacks, terrorism, hijackings, shootings,
+violent or sexual crime, crime suspects, suicide, abuse, child harm, death tolls.
+Wars, military moves, sanctions and policy news are fine.
+
 Output exactly SKIP only if the post is clearly not news: an ad/promo for the
 platform itself, a "new market" launch, giveaway, job post, pure meme/joke with
 no information, reply-bait question, "sign up"/"download"/"trade now" call to
@@ -299,11 +304,21 @@ would move one of its assets):
 - 1 = some indirect market or policy angle
 - 0 = no market angle (sports, entertainment, culture, gossip)
 
+3) "sensitive" 0-2: how sensitive the story is for a markets brand to post:
+- 2 = TOO SENSITIVE, never post: deaths, casualties or injuries as the core of
+  the story; attacks, terrorism, hijackings, shootings, bombings, kidnappings;
+  violent or sexual crime, crime suspects/perpetrators and their backgrounds;
+  suicide or self-harm; abuse; child harm; graphic disasters or death tolls;
+  hate incidents; individual personal tragedies.
+- 1 = serious but OK: wars, military moves, sanctions, strikes, elections,
+  layoffs, disasters framed by economic/market impact (no casualty focus).
+- 0 = not sensitive.
+
 Also give each headline a short "story" key (2-5 lowercase words) naming the
 underlying event, e.g. "fed rate cut", "ray dalio debt warning". Headlines about
 the SAME event must get the SAME key, even if worded differently.
 
-Reply ONLY with JSON: {"1": {"score": 7, "relevance": 2, "story": "..."}, "2": {...}}"""
+Reply ONLY with JSON: {"1": {"score": 7, "relevance": 2, "sensitive": 0, "story": "..."}, "2": {...}}"""
 
 
 def score_queue(claude, state):
@@ -328,6 +343,10 @@ def score_queue(claude, state):
         except (TypeError, ValueError):
             i["score"] = float(i.get("score", 5))
         i["story"] = str(r.get("story") or i.get("story") or i["id"]).strip().lower()
+        try:
+            i["sensitive"] = int(r.get("sensitive", i.get("sensitive", 0)))
+        except (TypeError, ValueError):
+            i["sensitive"] = int(i.get("sensitive", 0))
         try:
             i["relevance"] = max(0.0, min(3.0, float(r.get("relevance", i.get("relevance", 0)))))
         except (TypeError, ValueError):
@@ -366,9 +385,13 @@ def pick_order(state, now):
 
 def post_one(x, claude, state, now):
     score_queue(claude, state)
+    for i in [i for i in state["queue"] if i.get("sensitive", 0) >= 2]:
+        state["queue"].remove(i)
+        state["posted"].append(i["id"])
+        print(f"SKIP too sensitive @{i['handle']}/{i['id']}: {i['text'][:80]!r}")
     order = pick_order(state, now)
     print("Ranked: " + " | ".join(
-        f"{final_score(i, now):.1f} (news {i.get('score')}, rel {i.get('relevance', 0)}{' +both' if i.get('both') else ''}, "
+        f"{final_score(i, now):.1f} (news {i.get('score')}, rel {i.get('relevance', 0)}, sens {i.get('sensitive', 0)}{' +both' if i.get('both') else ''}, "
         f"{(now - i.get('ts', now)) / 60:.0f}m old) @{i['handle']}: {i['text'][:45]!r}"
         for i in order[:6]))
     for item in order:

@@ -10,6 +10,7 @@ Every 10 minutes the bot checks whether a posting slot is due. Only then does it
    - drops posts with videos or GIFs
    - drops anything older than 3 hours
    - drops stories that repeat something already posted
+   - drops **too-sensitive** stories (deaths/casualties, attacks, terrorism, hijackings, shootings, violent crime and suspects, suicide, abuse); wars, sanctions and policy news are still allowed
 2. **Ranks** the whole queue together with **Claude Sonnet 5.5** acting as editor, scoring 1–10 on a rubric:
    - Reach (0–4): how many people worldwide care
    - Impact (0–3): consequences for markets, economy, policy or daily life
