@@ -4,91 +4,28 @@
     "Polymarket": "1261335549215989760"
   },
   "since_ids": {
-    "Kalshi": "2107395452002083326",
-    "Polymarket": "2107386376639463478"
+    "Kalshi": "2107410548275007965",
+    "Polymarket": "2107407012711616867"
   },
   "posted": [
     "2107332582006251663",
     "2107338348394434620",
-    "2107380346614673462"
+    "2107380346614673462",
+    "2107407012711616867"
   ],
   "recent": [
     "JUST IN: CertiK says SI agents can trace stolen crypto and pause risky contracts",
     "JUST IN: Ray Dalio warns a US debt crisis could hit within 3 years https://t.co/gUxvNYQSdX",
-    "JUST IN: Japan's trade minister says China uses rare earths for \"economic coercion\" https://t.co/WZJFuOSyUm"
+    "JUST IN: Japan's trade minister says China uses rare earths for \"economic coercion\" https://t.co/WZJFuOSyUm",
+    "JUST IN: New Zealand police reveal the Flydubai co-pilot hijacker completed a portion of his flight training in the country."
   ],
   "recent_out": [
     "CertiK reports security intelligence agents now have the capability to track stolen cryptocurrency and halt potentially dangerous smart contracts \u26a0\ufe0f",
     "BREAKING: Ray Dalio cautions that the US could face a debt crisis within the next three years \ud83d\udcc9",
-    "JUST IN: Japan's trade minister says China uses rare earths for \"economic coercion"
+    "JUST IN: Japan's trade minister says China uses rare earths for \"economic coercion",
+    "JUST IN: New Zealand police say the Flydubai co-pilot hijacker completed part of his flight training in the country"
   ],
   "queue": [
-    {
-      "id": "2107342589867524270",
-      "handle": "Kalshi",
-      "text": "JUST IN: Google is set to close a $1 billion deal to buy nuclear power from Constellation for its data centers",
-      "ts": 1791264600.0,
-      "score": 6.0,
-      "story": "google constellation nuclear deal",
-      "relevance": 3.0,
-      "both": false,
-      "importance": 6.0
-    },
-    {
-      "id": "2107346362920779978",
-      "handle": "Kalshi",
-      "text": "BREAKING: Drake did not submit any of his 2026 projects for next year's GRAMMYs, per Billboard",
-      "ts": 1791265500.0,
-      "score": 2.0,
-      "story": "drake grammys no submission",
-      "relevance": 0.0,
-      "both": false,
-      "importance": 2.0
-    },
-    {
-      "id": "2107350144803107223",
-      "handle": "Kalshi",
-      "text": "JUST IN: AMD CEO says customers are demanding more AI chips than they can make",
-      "ts": 1791266401.0,
-      "score": 6.0,
-      "story": "amd ai chip demand",
-      "relevance": 3.0,
-      "both": false,
-      "importance": 6.0
-    },
-    {
-      "id": "2107355170959196219",
-      "handle": "Kalshi",
-      "text": "JUST IN: The US will sell $153 billion worth of debt today",
-      "ts": 1791267600.0,
-      "score": 3.0,
-      "story": "us treasury debt auction",
-      "relevance": 2.0,
-      "both": false,
-      "importance": 3.0
-    },
-    {
-      "id": "2107360204304126002",
-      "handle": "Kalshi",
-      "text": "JUST IN: Our traders now forecast US diesel prices will fall to $6.20 this month, after Trump\u2019s tax-free order https://t.co/RaV1Mto9YO",
-      "ts": 1791268800.0,
-      "score": 3.0,
-      "story": "us diesel tax-free order",
-      "relevance": 3.0,
-      "both": false,
-      "importance": 3.0
-    },
-    {
-      "id": "2107365241948340274",
-      "handle": "Kalshi",
-      "text": "JUST IN: South Korea will spend $3.5 billion of state and private funds to build its homegrown SI model in 5 months",
-      "ts": 1791270001.0,
-      "score": 5.0,
-      "story": "south korea sovereign ai model",
-      "relevance": 2.0,
-      "both": false,
-      "importance": 5.0
-    },
     {
       "id": "2107370270663245923",
       "handle": "Kalshi",
@@ -117,7 +54,7 @@
       "text": "JUST IN: Moonshot targets an IPO in Q1 2027 after hitting a $50 billion valuation",
       "ts": 1791274800.0,
       "score": 5.0,
-      "story": "moonshot ipo plan",
+      "story": "moonshot ipo 2027",
       "relevance": 2.0,
       "both": false,
       "importance": 5.0
@@ -126,35 +63,56 @@
       "id": "2107390403200831834",
       "handle": "Kalshi",
       "text": "JUST IN: Anthropic says it would accept a law requiring SI firms to report hacks",
-      "ts": 1791276000.0
+      "ts": 1791276000.0,
+      "score": 4.0,
+      "story": "anthropic hack reporting law",
+      "relevance": 2.0,
+      "both": false,
+      "importance": 4.0
     },
     {
       "id": "2107395452002083326",
       "handle": "Kalshi",
       "text": "JUST IN: Trump says taxpayers will no longer fund TV ads featuring himself",
-      "ts": 1791277203.0
-    },
-    {
-      "id": "2107341833214832865",
-      "handle": "Polymarket",
-      "text": "JUST IN: Japanese city officials are accused of inflating census numbers by adding empty households to hide the appearance of a shrinking population.",
-      "ts": 1791264420.0,
+      "ts": 1791277203.0,
       "score": 3.0,
-      "story": "japan census inflation scandal",
-      "relevance": 0.0,
+      "story": "trump no taxpayer tv ads",
+      "relevance": 1.0,
       "both": false,
       "importance": 3.0
     },
     {
-      "id": "2107361714111189007",
-      "handle": "Polymarket",
-      "text": "\ud83d\udea8 NEW POLYMARKET: Plague declared public health emergency by...?\n\nhttps://t.co/oUuD6uzZDS",
-      "ts": 1791269160.0,
-      "score": 2.0,
-      "story": "plague public health emergency market",
-      "relevance": 1.0,
+      "id": "2107400469786288286",
+      "handle": "Kalshi",
+      "text": "JUST IN: 64% chance Democrats win both chambers of Congress https://t.co/fzLa7eZrEc",
+      "ts": 1791278400.0,
+      "score": 4.0,
+      "story": "democrats win congress odds",
+      "relevance": 2.0,
       "both": false,
-      "importance": 2.0
+      "importance": 4.0
+    },
+    {
+      "id": "2107405502736970213",
+      "handle": "Kalshi",
+      "text": "JUST IN: US flies all its bombers out of UK base threatened by suspected terrorist attack",
+      "ts": 1791279600.0,
+      "score": 6.0,
+      "story": "us bombers leave uk base",
+      "relevance": 2.0,
+      "both": false,
+      "importance": 6.0
+    },
+    {
+      "id": "2107410548275007965",
+      "handle": "Kalshi",
+      "text": "BREAKING: Customer sues McDonald's, alleging their SI tool coordinates menu prices",
+      "ts": 1791280803.0,
+      "score": 3.0,
+      "story": "mcdonalds ai pricing lawsuit",
+      "relevance": 3.0,
+      "both": false,
+      "importance": 3.0
     },
     {
       "id": "2107369767224979960",
@@ -162,7 +120,7 @@
       "text": "JUST IN: OpenAI admits its response was \u201cnot good enough\u201d after a rogue AI agent breached Australian government websites.",
       "ts": 1791271080.0,
       "score": 5.0,
-      "story": "openai rogue agent australia breach",
+      "story": "rogue ai agent australia breach",
       "relevance": 2.0,
       "both": false,
       "importance": 5.0
@@ -173,12 +131,12 @@
       "text": "\ud83d\udea8 NEW POLYMARKET: Spain General Election Winner\n\nhttps://t.co/LOfIHxRXi4",
       "ts": 1791275040.0,
       "score": 2.0,
-      "story": "spain general election market",
-      "relevance": 2.0,
+      "story": "spain election market",
+      "relevance": 1.0,
       "both": false,
       "importance": 2.0
     }
   ],
-  "last_post_ts": 1791275652.3052063,
-  "last_source": "Kalshi"
+  "last_post_ts": 1791281677.216635,
+  "last_source": "Polymarket"
 }
