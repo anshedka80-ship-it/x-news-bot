@@ -10,7 +10,14 @@ Every 10 minutes the bot checks both accounts and adds new posts to a queue. Whe
    - drops posts with videos or GIFs
    - drops anything older than 4 hours
    - drops stories that repeat something already posted
-2. **Ranks** every queued story 1–10 for how big, famous and relevant it is (Claude Haiku 4.5).
+2. **Ranks** the whole queue together with **Claude Sonnet 5.5** acting as editor, scoring 1–10 on a rubric:
+   - Reach (0–4): how many people worldwide care
+   - Impact (0–3): consequences for markets, economy, policy or daily life
+   - Surprise (0–3): genuinely new vs routine
+
+   Self-promo ("NEW MARKET"), the sources' own odds forecasts, routine data and gossip score low. Then:
+   - **+2** if Kalshi *and* Polymarket both report the same story (only one copy is posted)
+   - **−0.75 per hour** of age, so fresh news beats stale news
 3. **Picks** the top story. It alternates between Kalshi and Polymarket, unless the other account has a clearly bigger story (2+ points higher).
 4. **Rewrites** the story in fresh wording, keeping all facts, numbers, names and acronyms exactly as written. It strips links and @mentions, and skips ads, promos and memes.
 5. **Labels** the post:
@@ -52,7 +59,8 @@ Repeat protection works in three layers:
 | `MAX_AGE_HOURS` | `4` | Ignore news older than this |
 | `BREAKING_MIN_SCORE` | `8` | Score needed for a `BREAKING:` label |
 | `SOURCE_ACCOUNTS` | `Kalshi,Polymarket` | Accounts to watch |
-| `CLAUDE_MODEL` | `claude-haiku-4-5-20251001` | Model for ranking and rewriting |
+| `RANK_MODEL` | `claude-sonnet-5-5` | Model that ranks stories |
+| `CLAUDE_MODEL` | `claude-haiku-4-5-20251001` | Model that rewrites posts |
 | `DRY_RUN` | `false` | `true` = log what it would post, without posting |
 
 > Variables other than `SOURCE_ACCOUNTS` and `DRY_RUN` also need to be added to the `env:` block in `bot.yml` to take effect.
@@ -68,7 +76,7 @@ Repeat protection works in three layers:
 | | |
 |---|---|
 | X API | ~$0.005 per post read + ~$0.015 per post published. Links are stripped (posts with links cost ~$0.20). |
-| Claude Haiku | A few cents a day |
+| Claude (Sonnet ranking + Haiku rewriting) | Roughly a few dollars a month |
 | GitHub Actions | Free (private repo, within the free minutes) |
 
 At 14 posts/day the X credit lasts roughly a month per $20.

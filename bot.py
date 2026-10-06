@@ -200,61 +200,99 @@ def prune_queue(state, now):
     state["queue"] = trimmed
 
 
-RANK_PROMPT = """Rate how big/important each news headline is for a general news audience,
-from 1 (trivial, niche, filler) to 10 (major headline everyone is talking about:
-elections, wars, Fed decisions, huge market moves, major company/AI news).
-Reply ONLY with JSON mapping each number to a score, e.g. {"1": 7, "2": 3}."""
+RANK_MODEL = os.getenv("RANK_MODEL", "claude-sonnet-5-5")
+BOTH_SOURCES_BOOST = 2.0        # story reported by both Kalshi AND Polymarket
+FRESHNESS_PENALTY_PER_HOUR = 0.75  # older queued stories slowly lose points
+
+RANK_PROMPT = """You are the editor of a fast breaking-news account on X. Score each
+headline from 1 to 10 for how much it deserves the next slot, using this rubric:
+
+- Reach (0-4): how many people worldwide care. Elections, wars, central banks,
+  mega-cap companies, top celebrities, major disasters score high; local or
+  niche stories score low.
+- Impact (0-3): real consequences for markets, the economy, policy or daily life.
+- Surprise/newsworthiness (0-3): genuinely new, unexpected or a major update,
+  versus routine/scheduled/incremental info.
+
+Score LOW (1-3): platform self-promotion ("NEW MARKET", "trade now"), the
+source's own trader forecasts or odds without a real-world event, routine
+data, minor celebrity gossip, memes, vague teasers.
+
+Also give each headline a short "story" key (2-5 lowercase words) naming the
+underlying event, e.g. "fed rate cut", "ray dalio debt warning". Headlines about
+the SAME event must get the SAME key, even if worded differently.
+
+Reply ONLY with JSON: {"1": {"score": 7, "story": "..."}, "2": {...}}"""
 
 
 def score_queue(claude, state):
-    """Give every queued item an importance score (cached on the item)."""
-    todo = [i for i in state["queue"] if "score" not in i]
-    if not todo:
+    """Re-score the whole queue together so scores are comparable."""
+    q = state["queue"]
+    if not q:
         return
-    listing = "\n".join(f"{n}. {i['text'][:300]}" for n, i in enumerate(todo, 1))
+    listing = "\n".join(f"{n}. [{i['handle']}] {i['text'][:300]}" for n, i in enumerate(q, 1))
     try:
         msg = claude.messages.create(
-            model=CLAUDE_MODEL, max_tokens=400, system=RANK_PROMPT,
+            model=RANK_MODEL, max_tokens=1500, system=RANK_PROMPT,
             messages=[{"role": "user", "content": listing}])
         raw = "".join(b.text for b in msg.content if b.type == "text")
-        scores = json.loads(raw[raw.find("{"): raw.rfind("}") + 1])
+        res = json.loads(raw[raw.find("{"): raw.rfind("}") + 1])
     except Exception as e:
-        print(f"Ranking failed ({e}); falling back to newest-first.")
-        scores = {}
-    for n, i in enumerate(todo, 1):
+        print(f"Ranking failed ({e}); using previous/neutral scores.")
+        res = {}
+    for n, i in enumerate(q, 1):
+        r = res.get(str(n)) or {}
         try:
-            i["score"] = float(scores.get(str(n), 5))
+            i["score"] = float(r.get("score", i.get("score", 5)))
         except (TypeError, ValueError):
-            i["score"] = 5.0
+            i["score"] = float(i.get("score", 5))
+        i["story"] = str(r.get("story") or i.get("story") or i["id"]).strip().lower()
+
+    # Both sources covering the same story = bigger story.
+    handles_by_story = {}
+    for i in q:
+        handles_by_story.setdefault(i["story"], set()).add(i["handle"])
+    for i in q:
+        i["both"] = len(handles_by_story[i["story"]]) > 1
+        i["importance"] = min(10.0, i["score"] + (BOTH_SOURCES_BOOST if i["both"] else 0))
 
 
-def pick_order(state):
-    """Biggest headlines first; prefer the source that didn't post last
+def final_score(i, now):
+    age_h = max(0.0, (now - i.get("ts", now)) / 3600)
+    return i.get("importance", i.get("score", 5)) - FRESHNESS_PENALTY_PER_HOUR * age_h
+
+
+def pick_order(state, now):
+    """Best final score first; prefer the source that didn't post last
     unless the other source has a clearly bigger story (2+ points)."""
-    q = sorted(state["queue"], key=lambda i: (i.get("score", 5), int(i["id"])), reverse=True)
+    q = sorted(state["queue"], key=lambda i: (final_score(i, now), int(i["id"])), reverse=True)
     if not q:
         return []
     others = [i for i in q if i["handle"] != state["last_source"]]
-    if others and others[0].get("score", 5) >= q[0].get("score", 5) - 2:
-        first = others[0]
-        q.remove(first)
-        q.insert(0, first)
+    if others and final_score(others[0], now) >= final_score(q[0], now) - 2:
+        q.remove(others[0])
+        q.insert(0, others[0])
     return q
 
 
 def post_one(x, claude, state, now):
     score_queue(claude, state)
+    order = pick_order(state, now)
     print("Ranked: " + " | ".join(
-        f"{i.get('score', '?')} @{i['handle']}: {i['text'][:50]!r}" for i in pick_order(state)[:5]))
-    for item in pick_order(state):
+        f"{final_score(i, now):.1f} (ai {i.get('score')}{' +both' if i.get('both') else ''}, "
+        f"{(now - i.get('ts', now)) / 60:.0f}m old) @{i['handle']}: {i['text'][:45]!r}"
+        for i in order[:6]))
+    for item in order:
         handle = item["handle"]
+        if item not in state["queue"]:
+            continue
         state["queue"].remove(item)
         state["posted"].append(item["id"])
         if is_duplicate(item["text"], state["recent"] + state["recent_out"]):
             print(f"SKIP duplicate story @{handle}/{item['id']}")
             continue
         try:
-            prefix = (BREAKING_PREFIX if item.get("score", 0) >= BREAKING_MIN_SCORE
+            prefix = (BREAKING_PREFIX if item.get("importance", item.get("score", 0)) >= BREAKING_MIN_SCORE
                       else JUSTIN_PREFIX)
             new_text = rephrase(claude, item["text"], state["recent_out"], prefix)
         except Exception as e:
@@ -273,6 +311,11 @@ def post_one(x, claude, state, now):
             except tweepy.TweepyException as e:
                 print(f"Post failed: {e}")
                 return
+        # Drop the other source's copy of the same story.
+        for other in [i for i in state["queue"] if i.get("story") == item.get("story")]:
+            state["queue"].remove(other)
+            state["posted"].append(other["id"])
+            print(f"Dropped same story from @{other['handle']}/{other['id']}")
         state["recent"] = (state["recent"] + [item["text"]])[-100:]
         state["recent_out"] = (state["recent_out"] + [new_text])[-100:]
         state["last_post_ts"] = now
