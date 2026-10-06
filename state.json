@@ -4,7 +4,7 @@
     "Polymarket": "1261335549215989760"
   },
   "since_ids": {
-    "Kalshi": "2107355170959196219",
+    "Kalshi": "2107360204304126002",
     "Polymarket": "2107341833214832865"
   },
   "posted": [
@@ -46,6 +46,12 @@
       "handle": "Kalshi",
       "text": "JUST IN: The US will sell $153 billion worth of debt today",
       "ts": 1791267600.0
+    },
+    {
+      "id": "2107360204304126002",
+      "handle": "Kalshi",
+      "text": "JUST IN: Our traders now forecast US diesel prices will fall to $6.20 this month, after Trump\u2019s tax-free order https://t.co/RaV1Mto9YO",
+      "ts": 1791268800.0
     },
     {
       "id": "2107341833214832865",
