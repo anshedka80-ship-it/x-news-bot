@@ -4,8 +4,8 @@
     "Polymarket": "1261335549215989760"
   },
   "since_ids": {
-    "Kalshi": "2107415569116897629",
-    "Polymarket": "2107407012711616867"
+    "Kalshi": "2107425643457597592",
+    "Polymarket": "2107423370581250510"
   },
   "posted": [
     "2107332582006251663",
@@ -13,45 +13,36 @@
     "2107380346614673462",
     "2107407012711616867",
     "2107405502736970213",
-    "2107410548275007965"
+    "2107410548275007965",
+    "2107400469786288286"
   ],
   "recent": [
     "JUST IN: CertiK says SI agents can trace stolen crypto and pause risky contracts",
     "JUST IN: Ray Dalio warns a US debt crisis could hit within 3 years https://t.co/gUxvNYQSdX",
     "JUST IN: Japan's trade minister says China uses rare earths for \"economic coercion\" https://t.co/WZJFuOSyUm",
     "JUST IN: New Zealand police reveal the Flydubai co-pilot hijacker completed a portion of his flight training in the country.",
-    "BREAKING: Customer sues McDonald's, alleging their SI tool coordinates menu prices"
+    "BREAKING: Customer sues McDonald's, alleging their SI tool coordinates menu prices",
+    "JUST IN: 64% chance Democrats win both chambers of Congress https://t.co/fzLa7eZrEc"
   ],
   "recent_out": [
-    "CertiK reports security intelligence agents now have the capability to track stolen cryptocurrency and halt potentially dangerous smart contracts ⚠️",
-    "BREAKING: Ray Dalio cautions that the US could face a debt crisis within the next three years 📉",
+    "CertiK reports security intelligence agents now have the capability to track stolen cryptocurrency and halt potentially dangerous smart contracts \u26a0\ufe0f",
+    "BREAKING: Ray Dalio cautions that the US could face a debt crisis within the next three years \ud83d\udcc9",
     "JUST IN: Japan's trade minister says China uses rare earths for \"economic coercion",
     "JUST IN: New Zealand police say the Flydubai co-pilot hijacker completed part of his flight training in the country",
-    "JUST IN: Customer sues McDonald's, alleging its SI tool coordinates menu prices"
+    "JUST IN: Customer sues McDonald's, alleging its SI tool coordinates menu prices",
+    "JUST IN: Prediction markets put the odds of Democrats winning both chambers of Congress at 64%"
   ],
   "queue": [
-    {
-      "id": "2107375303706440057",
-      "handle": "Kalshi",
-      "text": "JUST IN: AMD CEO says their investment in Taiwan is progressing and they'll \"boost the figure\"",
-      "ts": 1791272400,
-      "score": 4,
-      "story": "amd taiwan investment",
-      "relevance": 3,
-      "both": false,
-      "importance": 4,
-      "sensitive": 0
-    },
     {
       "id": "2107385370153300142",
       "handle": "Kalshi",
       "text": "JUST IN: Moonshot targets an IPO in Q1 2027 after hitting a $50 billion valuation",
       "ts": 1791274800,
-      "score": 5,
-      "story": "moonshot ipo plan",
-      "relevance": 2,
+      "score": 6.0,
+      "story": "moonshot ai ipo plan",
+      "relevance": 3.0,
       "both": false,
-      "importance": 5,
+      "importance": 6.0,
       "sensitive": 0
     },
     {
@@ -59,11 +50,11 @@
       "handle": "Kalshi",
       "text": "JUST IN: Anthropic says it would accept a law requiring SI firms to report hacks",
       "ts": 1791276000,
-      "score": 4,
+      "score": 5.0,
       "story": "anthropic hack reporting law",
-      "relevance": 2,
+      "relevance": 2.0,
       "both": false,
-      "importance": 4,
+      "importance": 5.0,
       "sensitive": 0
     },
     {
@@ -71,23 +62,11 @@
       "handle": "Kalshi",
       "text": "JUST IN: Trump says taxpayers will no longer fund TV ads featuring himself",
       "ts": 1791277203,
-      "score": 4,
+      "score": 4.0,
       "story": "trump taxpayer tv ads",
-      "relevance": 1,
+      "relevance": 1.0,
       "both": false,
-      "importance": 4,
-      "sensitive": 0
-    },
-    {
-      "id": "2107400469786288286",
-      "handle": "Kalshi",
-      "text": "JUST IN: 64% chance Democrats win both chambers of Congress https://t.co/fzLa7eZrEc",
-      "ts": 1791278400,
-      "score": 3,
-      "story": "democrats win congress odds",
-      "relevance": 2,
-      "both": false,
-      "importance": 3,
+      "importance": 4.0,
       "sensitive": 0
     },
     {
@@ -95,27 +74,62 @@
       "handle": "Kalshi",
       "text": "JUST IN: Lithuania says the US only needs to decide, and they will cover the costs for US military base",
       "ts": 1791282000,
-      "score": 4,
+      "score": 4.0,
       "story": "lithuania us base offer",
       "sensitive": 1,
-      "relevance": 1,
+      "relevance": 1.0,
       "both": false,
-      "importance": 4
+      "importance": 4.0
+    },
+    {
+      "id": "2107420602218971291",
+      "handle": "Kalshi",
+      "text": "BREAKING: A $30 estate sale painting has just been sold at an auction for $1.35 million https://t.co/CdRS8Q4w1f",
+      "ts": 1791283200.0,
+      "score": 3.0,
+      "story": "thirty dollar painting auction",
+      "sensitive": 0,
+      "relevance": 0.0,
+      "both": false,
+      "importance": 3.0
+    },
+    {
+      "id": "2107425643457597592",
+      "handle": "Kalshi",
+      "text": "JUST IN: Russia says it's ready to help the US fight disease outbreaks, including measles",
+      "ts": 1791284402.0,
+      "score": 3.0,
+      "story": "russia us measles help",
+      "sensitive": 0,
+      "relevance": 0.0,
+      "both": false,
+      "importance": 3.0
     },
     {
       "id": "2107386376639463478",
       "handle": "Polymarket",
-      "text": "🚨 NEW POLYMARKET: Spain General Election Winner\n\nhttps://t.co/LOfIHxRXi4",
+      "text": "\ud83d\udea8 NEW POLYMARKET: Spain General Election Winner\n\nhttps://t.co/LOfIHxRXi4",
       "ts": 1791275040,
-      "score": 2,
+      "score": 2.0,
       "story": "spain election market",
-      "relevance": 2,
+      "relevance": 1.0,
       "both": false,
-      "importance": 2,
+      "importance": 2.0,
       "sensitive": 0
+    },
+    {
+      "id": "2107423370581250510",
+      "handle": "Polymarket",
+      "text": "JUST IN: Cuba announces it is increasing its defense capabilities \u201cmore than ever before\u201d as it prepares for the possibility of U.S. military action.",
+      "ts": 1791283860.0,
+      "score": 6.0,
+      "story": "cuba defense buildup us",
+      "sensitive": 1,
+      "relevance": 2.0,
+      "both": false,
+      "importance": 6.0
     }
   ],
-  "last_post_ts": 1791282284.766196,
-  "last_source": "Kalshi",
-  "force_next": "2107400469786288286"
+  "last_post_ts": 1791285297.927039,
+  "last_source": "Kalshi"
 }
