@@ -4,7 +4,7 @@
     "Polymarket": "1261335549215989760"
   },
   "since_ids": {
-    "Kalshi": "2107380346614673462",
+    "Kalshi": "2107385370153300142",
     "Polymarket": "2107369767224979960"
   },
   "posted": [
@@ -78,6 +78,12 @@
       "handle": "Kalshi",
       "text": "JUST IN: Japan's trade minister says China uses rare earths for \"economic coercion\" https://t.co/WZJFuOSyUm",
       "ts": 1791273602.0
+    },
+    {
+      "id": "2107385370153300142",
+      "handle": "Kalshi",
+      "text": "JUST IN: Moonshot targets an IPO in Q1 2027 after hitting a $50 billion valuation",
+      "ts": 1791274800.0
     },
     {
       "id": "2107341833214832865",
