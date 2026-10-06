@@ -140,7 +140,11 @@ def clean(text: str) -> str:
     text = re.sub(r"@\w+", "", text)
     text = re.sub(r"[ \t]+", " ", text)
     text = re.sub(r"\n{3,}", "\n\n", text)
-    return text.strip().strip('"').strip()
+    text = text.strip()
+    # remove quotes only if they wrap the whole text (keep real quotations)
+    if len(text) > 1 and text[0] in '"“' and text[-1] in '"”' and text.count('"') + text.count('“') + text.count('”') == 2:
+        text = text[1:-1].strip()
+    return text
 
 
 def _words(s):
