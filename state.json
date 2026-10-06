@@ -4,7 +4,7 @@
     "Polymarket": "1261335549215989760"
   },
   "since_ids": {
-    "Kalshi": "2107360204304126002",
+    "Kalshi": "2107365241948340274",
     "Polymarket": "2107361714111189007"
   },
   "posted": [
@@ -54,6 +54,12 @@
       "text": "JUST IN: Our traders now forecast US diesel prices will fall to $6.20 this month, after Trump\u2019s tax-free order https://t.co/RaV1Mto9YO",
       "ts": 1791268800.0,
       "score": 5.0
+    },
+    {
+      "id": "2107365241948340274",
+      "handle": "Kalshi",
+      "text": "JUST IN: South Korea will spend $3.5 billion of state and private funds to build its homegrown SI model in 5 months",
+      "ts": 1791270001.0
     },
     {
       "id": "2107341833214832865",
