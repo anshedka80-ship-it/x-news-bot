@@ -4,7 +4,7 @@
     "Polymarket": "1261335549215989760"
   },
   "since_ids": {
-    "Kalshi": "2107332582006251663",
+    "Kalshi": "2107338348394434620",
     "Polymarket": "2107330670787756463"
   },
   "posted": [
@@ -16,7 +16,14 @@
   "recent_out": [
     "CertiK reports security intelligence agents now have the capability to track stolen cryptocurrency and halt potentially dangerous smart contracts \u26a0\ufe0f"
   ],
-  "queue": [],
+  "queue": [
+    {
+      "id": "2107338348394434620",
+      "handle": "Kalshi",
+      "text": "JUST IN: Ray Dalio warns a US debt crisis could hit within 3 years https://t.co/gUxvNYQSdX",
+      "ts": 1791263589.0
+    }
+  ],
   "last_post_ts": 1791263273.9356112,
   "last_source": "Kalshi"
 }
