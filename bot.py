@@ -40,7 +40,9 @@ Rules:
 - Keep every fact, number, percentage, name and date exactly accurate. Do not add facts.
 - Keep acronyms, abbreviations, tickers and jargon exactly as written (e.g. "SI",
   "ETF", "CPI"). Never guess or spell out what an acronym stands for.
-- Max 260 characters. Plain text. At most one emoji. No hashtags.
+- Do NOT start with "JUST IN", "BREAKING" or similar; a "JUST IN:" prefix is added
+  automatically. Write only the headline itself.
+- Max 250 characters. Plain text. At most one emoji. No hashtags.
 - No URLs or links of any kind.
 - Do not mention Kalshi, Polymarket, or any source account or @handle.
 - Never refer to a video, clip, image, chart or "watch"/"see below".
@@ -81,6 +83,9 @@ def x_client():
     )
 
 
+PREFIX = os.getenv("POST_PREFIX", "JUST IN: ")
+PREFIX_RE = re.compile(r"^\W*(just in|breaking( news)?|update|developing)\s*[:\-–—]\s*", re.I)
+
 URL_RE = re.compile(r"https?://\S+|\bt\.co/\S+|\bwww\.\S+", re.I)
 
 
@@ -93,7 +98,7 @@ def clean(text: str) -> str:
 
 
 def _words(s):
-    return set(re.findall(r"[a-z0-9%$.]+", clean(s).lower()))
+    return set(re.findall(r"[a-z0-9%$.]+", PREFIX_RE.sub("", clean(s)).lower()))
 
 
 def is_duplicate(text, recent, threshold=0.6):
@@ -125,9 +130,12 @@ def rephrase(claude, original: str, recent_out: list[str]) -> str | None:
     out = clean("".join(b.text for b in msg.content if b.type == "text"))
     if not out or out.upper().startswith("SKIP"):
         return None
-    if len(out) > 280:
-        out = out[:277].rsplit(" ", 1)[0] + "…"
-    return out
+    # Always start with the fixed prefix; drop any prefix Claude/source added.
+    out = PREFIX_RE.sub("", out).strip()
+    room = 280 - len(PREFIX)
+    if len(out) > room:
+        out = out[:room - 1].rsplit(" ", 1)[0] + "…"
+    return PREFIX + out
 
 
 # ---------- steps ----------
@@ -190,49 +198,82 @@ def prune_queue(state, now):
     state["queue"] = trimmed
 
 
-def source_order(state):
-    """Alternate: start with the source that did NOT post last."""
-    srcs = list(SOURCE_ACCOUNTS)
-    if state["last_source"] in srcs:
-        srcs.remove(state["last_source"])
-        srcs.append(state["last_source"])
-    return srcs
+RANK_PROMPT = """Rate how big/important each news headline is for a general news audience,
+from 1 (trivial, niche, filler) to 10 (major headline everyone is talking about:
+elections, wars, Fed decisions, huge market moves, major company/AI news).
+Reply ONLY with JSON mapping each number to a score, e.g. {"1": 7, "2": 3}."""
+
+
+def score_queue(claude, state):
+    """Give every queued item an importance score (cached on the item)."""
+    todo = [i for i in state["queue"] if "score" not in i]
+    if not todo:
+        return
+    listing = "\n".join(f"{n}. {i['text'][:300]}" for n, i in enumerate(todo, 1))
+    try:
+        msg = claude.messages.create(
+            model=CLAUDE_MODEL, max_tokens=400, system=RANK_PROMPT,
+            messages=[{"role": "user", "content": listing}])
+        raw = "".join(b.text for b in msg.content if b.type == "text")
+        scores = json.loads(raw[raw.find("{"): raw.rfind("}") + 1])
+    except Exception as e:
+        print(f"Ranking failed ({e}); falling back to newest-first.")
+        scores = {}
+    for n, i in enumerate(todo, 1):
+        try:
+            i["score"] = float(scores.get(str(n), 5))
+        except (TypeError, ValueError):
+            i["score"] = 5.0
+
+
+def pick_order(state):
+    """Biggest headlines first; prefer the source that didn't post last
+    unless the other source has a clearly bigger story (2+ points)."""
+    q = sorted(state["queue"], key=lambda i: (i.get("score", 5), int(i["id"])), reverse=True)
+    if not q:
+        return []
+    others = [i for i in q if i["handle"] != state["last_source"]]
+    if others and others[0].get("score", 5) >= q[0].get("score", 5) - 2:
+        first = others[0]
+        q.remove(first)
+        q.insert(0, first)
+    return q
 
 
 def post_one(x, claude, state, now):
-    for handle in source_order(state):
-        # newest first within that source
-        items = sorted([i for i in state["queue"] if i["handle"] == handle],
-                       key=lambda i: int(i["id"]), reverse=True)
-        for item in items:
-            state["queue"].remove(item)
-            state["posted"].append(item["id"])
-            if is_duplicate(item["text"], state["recent"] + state["recent_out"]):
-                print(f"SKIP duplicate story @{handle}/{item['id']}")
-                continue
+    score_queue(claude, state)
+    print("Ranked: " + " | ".join(
+        f"{i.get('score', '?')} @{i['handle']}: {i['text'][:50]!r}" for i in pick_order(state)[:5]))
+    for item in pick_order(state):
+        handle = item["handle"]
+        state["queue"].remove(item)
+        state["posted"].append(item["id"])
+        if is_duplicate(item["text"], state["recent"] + state["recent_out"]):
+            print(f"SKIP duplicate story @{handle}/{item['id']}")
+            continue
+        try:
+            new_text = rephrase(claude, item["text"], state["recent_out"])
+        except Exception as e:
+            print(f"Claude error on {item['id']}: {e}")
+            continue
+        if not new_text:
+            print(f"SKIP (not news or already covered) @{handle}/{item['id']}")
+            continue
+        if is_duplicate(new_text, state["recent_out"], threshold=0.5):
+            print(f"SKIP rewrite too similar to a recent post @{handle}/{item['id']}")
+            continue
+        print(f"\n@{handle}/{item['id']}\n  IN : {item['text']!r}\n  OUT: {new_text!r}")
+        if not DRY_RUN:
             try:
-                new_text = rephrase(claude, item["text"], state["recent_out"])
-            except Exception as e:
-                print(f"Claude error on {item['id']}: {e}")
-                continue
-            if not new_text:
-                print(f"SKIP (not news or already covered) @{handle}/{item['id']}")
-                continue
-            if is_duplicate(new_text, state["recent_out"], threshold=0.5):
-                print(f"SKIP rewrite too similar to a recent post @{handle}/{item['id']}")
-                continue
-            print(f"\n@{handle}/{item['id']}\n  IN : {item['text']!r}\n  OUT: {new_text!r}")
-            if not DRY_RUN:
-                try:
-                    x.create_tweet(text=new_text)
-                except tweepy.TweepyException as e:
-                    print(f"Post failed: {e}")
-                    return
-            state["recent"] = (state["recent"] + [item["text"]])[-100:]
-            state["recent_out"] = (state["recent_out"] + [new_text])[-100:]
-            state["last_post_ts"] = now
-            state["last_source"] = handle
-            return
+                x.create_tweet(text=new_text)
+            except tweepy.TweepyException as e:
+                print(f"Post failed: {e}")
+                return
+        state["recent"] = (state["recent"] + [item["text"]])[-100:]
+        state["recent_out"] = (state["recent_out"] + [new_text])[-100:]
+        state["last_post_ts"] = now
+        state["last_source"] = handle
+        return
     print("Queue empty — nothing to post this slot.")
 
 
